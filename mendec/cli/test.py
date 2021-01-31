@@ -1,0 +1,76 @@
+import unittest
+
+
+class Test(unittest.TestCase):
+    def test_varint(self):
+        from .varint import encode_stream, decode_stream
+        from random import SystemRandom
+        from io import BytesIO
+
+        random = SystemRandom()
+
+        enb = BytesIO()
+
+        ints = [random.getrandbits(b) for b in (8, 4 * 8, 4 * 8, 444 * 8, 4444 * 8)]
+        for i in ints:
+            encode_stream(enb, i)
+
+        deb = BytesIO(enb.getvalue())
+        for i in ints:
+            j = decode_stream(deb)
+            self.assertEqual(i, j)
+        self.assertEqual(deb.read(), b"")
+
+        # print(usage(x))
+
+    def test_enc_dec(self):
+
+        from tempfile import NamedTemporaryFile
+        from sys import path
+        from subprocess import check_call, check_output
+
+        # from os.path import dirname
+
+        # with NamedTemporaryFile(delete=False, suffix=".key", prefix="mendec") as _:
+        #     key_file = _.file
+
+        # check_call(
+        #     r'python -m mendec.cli.keygen -tB256 -p4 > "{}"'.format(key_file),
+        #     shell=True,
+        # )
+
+        from .message import encrypt, decrypt
+        from .key import newkeys
+        from os import urandom
+
+        def try1(bits, accurate, pool):
+            n, e, d = newkeys(bits, accurate, pool)
+
+            bits_max = n.bit_length()
+            q, r = divmod(bits_max - 1, 8)
+            bytes_max = q if q > 0 else q + 1
+            for s in (bytes_max, bytes_max//4, bytes_max//3, bytes_max//2, 1):
+                message = urandom(s)
+
+                encrypted = encrypt(message, n, e)
+                decrypted = decrypt(encrypted, n, d)
+                self.assertEqual(decrypted, message, s)
+                encrypted = encrypt(message, n, d)
+                decrypted = decrypt(encrypted, n, e)
+                self.assertEqual(decrypted, message, s)
+                encrypted = encrypt(message, n, d)
+                decrypted = decrypt(encrypted, n, d)
+                self.assertNotEqual(decrypted, message, s)
+                encrypted = encrypt(message, n, e)
+                decrypted = decrypt(encrypted, n, e)
+                self.assertNotEqual(decrypted, message, s)
+
+        for bits in (64, 96, 256):
+            for accurate in (True, False):
+                for pool in (1, 2, 3):
+                    try1(bits, accurate, pool)
+
+
+# check_output
+
+# cat '/media/biojet1/OS/tmp/psd.urls.txt' | python -m mendec.cli.encrypt key --no-short | python -m mendec.cli.decrypt key --no-short
