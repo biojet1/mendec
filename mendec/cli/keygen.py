@@ -1,12 +1,15 @@
-from ocli import param, arg, flag, Main
+from ocli import param, flag, Main
 from ocli.extra import BasicLog
 
-x8 = lambda v: int(v) * 8
+
+def x8(v):
+    return int(v) * 8
 
 
 @param("bits", "b", default=2048, type=int, help="How many bits")
 @param("bytes", "B", type=x8, dest="bits", help="How many bits in bytes")
 @param("pool", "p", default=1, type=int, help="How many process to generate primes")
+@param("output", "o", help="output to file", default=None)
 @flag("test", "t", default=True, help="Test the generated key")
 @flag("near", "n", default=True, dest="accurate", help="Not exact bits is ok")
 class KeyGen(BasicLog, Main):
@@ -16,16 +19,16 @@ class KeyGen(BasicLog, Main):
     def start(self, *args, **kwargs):
         from time import time
         from datetime import datetime
-        from sys import stdin, stdout, argv, platform, stderr, exit
-        from logging import info, error
+        from sys import platform
+        from logging import info
         from ..message import encrypt, decrypt
         from ..key import newkeys
+        from .pick import as_sink
 
         t = time()
         n, e, d = newkeys(self.bits, accurate=self.accurate, poolsize=self.pool)
         info("Duration %ss", time() - t)
 
-        from json import dumps
         import pprint
 
         k = dict(n=n, e=e, d=d)
@@ -34,15 +37,16 @@ class KeyGen(BasicLog, Main):
             max_bits, max_bits // 8, (datetime.utcnow()).strftime("%Y%b%d_%H%M%S")
         )
 
-        print(
-            "#"
-            + " ".join(
-                "{}:{}@{}".format(n, v.bit_length() // 8, v.bit_length())
-                for n, v in k.items()
-                if n
-            )
-        )
-        pprint.pprint(k)
+        with as_sink(self.output, "w") as out:
+            out.write("#")
+            for x, v in k.items():
+                if x:
+                    out.write(
+                        " {}:{}@{}".format(x, v.bit_length() // 8, v.bit_length())
+                    )
+            out.write("\n")
+
+            pprint.pprint(k, stream=out)
 
         if self.test:
             data = dict(message=platform.encode())

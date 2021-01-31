@@ -1,5 +1,6 @@
 from binascii import hexlify
 from struct import pack
+from os import urandom
 
 
 def bytes2int(raw_bytes):
@@ -13,40 +14,53 @@ def byte_size(n):
     return (q + 1) if r else q
 
 
-def int2bytes(number, block_size=0):
-    if number < 0:
-        raise ValueError("Negative numbers cannot be used: %i" % number)
+# def int2bytes(number, block_size=0):
+#     if number < 0:
+#         raise ValueError("Negative numbers cannot be used: %i" % number)
 
-    # Do some bounds checking
-    if number == 0:
-        needed_bytes = 1
-        raw_bytes = [b"\x00"]
-    else:
-        needed_bytes = byte_size(number)
-        raw_bytes = []
+#     # Do some bounds checking
+#     if number == 0:
+#         needed_bytes = 1
+#         raw_bytes = [b"\x00"]
+#     else:
+#         needed_bytes = byte_size(number)
+#         raw_bytes = []
 
-    if block_size > 0 and needed_bytes > block_size:
-        raise OverflowError(
-            "Needed %i bytes for number, but block size "
-            "is %i" % (needed_bytes, block_size)
-        )
+#     if block_size > 0 and needed_bytes > block_size:
+#         raise OverflowError(
+#             "Needed %i bytes for number, but block size "
+#             "is %i" % (needed_bytes, block_size)
+#         )
 
-    # Convert the number to bytes.
-    while number > 0:
-        raw_bytes.insert(0, pack("B", number & 0xFF))
-        number >>= 8
+#     # Convert the number to bytes.
+#     while number > 0:
+#         raw_bytes.insert(0, pack("B", number & 0xFF))
+#         number >>= 8
 
-    # Pad with zeroes to fill the block
-    if block_size > 0:
-        padding = (block_size - needed_bytes) * b"\x00"
-    else:
-        padding = b""
+#     # Pad with zeroes to fill the block
+#     if block_size > 0:
+#         padding = (block_size - needed_bytes) * b"\x00"
+#     else:
+#         padding = b""
 
-    return padding + b"".join(raw_bytes)
+#     return padding + b"".join(raw_bytes)
+
+
+def int2bytes(n):
+    if n < 0:
+        raise ValueError("Negative numbers cannot be used: %i" % n)
+    elif n == 0:
+        return b"\x00"
+    a = []
+    while n > 0:
+        a.append(pack("B", n & 0xFF))
+        n >>= 8
+    a.reverse()
+    return b"".join(a)
+
 
 #########
 
-from os import urandom
 
 def read_random_bits(nbits):
     """Reads 'nbits' random bits.
@@ -63,14 +77,14 @@ def read_random_bits(nbits):
     # Add the remaining random bits
     if rbits > 0:
         randomvalue = ord(urandom(1))
-        randomvalue >>= (8 - rbits)
+        randomvalue >>= 8 - rbits
         randomdata = pack("B", randomvalue) + randomdata
 
     return randomdata
 
+
 def read_random_int(nbits):
-    """Reads a random integer of approximately nbits bits.
-    """
+    """Reads a random integer of approximately nbits bits."""
 
     randomdata = read_random_bits(nbits)
     value = bytes2int(randomdata)
@@ -80,6 +94,7 @@ def read_random_int(nbits):
     value |= 1 << (nbits - 1)
 
     return value
+
 
 def read_random_odd_int(nbits):
     """Reads a random odd integer of approximately nbits bits.
@@ -118,4 +133,3 @@ def randint(maxvalue):
         tries += 1
 
     return value
-

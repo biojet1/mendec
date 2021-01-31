@@ -11,7 +11,9 @@ class Test(unittest.TestCase):
 
         enb = BytesIO()
 
-        ints = [random.getrandbits(b) for b in (8, 4 * 8, 4 * 8, 444 * 8, 4444 * 8)]
+        bits = (8, 4 * 8, 444 * 8, 4444 * 8)
+
+        ints = [random.getrandbits(b) for b in bits]
         for i in ints:
             encode_stream(enb, i)
 
@@ -25,23 +27,9 @@ class Test(unittest.TestCase):
 
     def test_enc_dec(self):
 
-        from tempfile import NamedTemporaryFile
-        from sys import path
-        from subprocess import check_call, check_output
-
-        # from os.path import dirname
-
-        # with NamedTemporaryFile(delete=False, suffix=".key", prefix="mendec") as _:
-        #     key_file = _.file
-
-        # check_call(
-        #     r'python -m mendec.cli.keygen -tB256 -p4 > "{}"'.format(key_file),
-        #     shell=True,
-        # )
-
+        from os import urandom
         from .message import encrypt, decrypt
         from .key import newkeys
-        from os import urandom
 
         def try1(bits, accurate, pool):
             n, e, d = newkeys(bits, accurate, pool)
@@ -49,8 +37,9 @@ class Test(unittest.TestCase):
             bits_max = n.bit_length()
             q, r = divmod(bits_max - 1, 8)
             bytes_max = q if q > 0 else q + 1
-            for s in (bytes_max, bytes_max//4, bytes_max//3, bytes_max//2, 1):
+            for s in (bytes_max, bytes_max // 4, bytes_max // 3, bytes_max // 2, 1):
                 message = urandom(s)
+                message = message.strip(b"\x00")
 
                 encrypted = encrypt(message, n, e)
                 decrypted = decrypt(encrypted, n, d)

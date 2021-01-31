@@ -1,5 +1,5 @@
-from ocli import param, arg, flag, Main
-from ocli.extra import Counter, BasicLog
+from ocli import arg, Main
+from ocli.extra import BasicLog
 
 from .pick import Crypt
 
@@ -11,8 +11,7 @@ class Encrypt(Crypt, BasicLog, Main):
     app_name = "encrypt"
 
     def start(self, *args, **kwargs):
-        from sys import stdout, stdin
-        from ..message import encrypt, decrypt
+        from ..message import encrypt
         from .pick import parse_keyfile, write_to, read_from, as_source, as_sink
 
         # parse the key file
@@ -39,6 +38,7 @@ class Encrypt(Crypt, BasicLog, Main):
             write_to(self.output, encode(encrypted) if encode else encrypted)
         else:
             from ..message import vencrypt
+
             with as_source(self.message) as r, as_sink(self.output) as w:
                 vencrypt(desc["n"], e, r, w)
 

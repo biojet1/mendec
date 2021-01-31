@@ -1,19 +1,5 @@
+# from struct import pack
 from .utils import int2bytes, bytes2int
-
-from struct import pack
-
-
-def int2bytes(n):
-    if n < 0:
-        raise ValueError("Negative numbers cannot be used: %i" % n)
-    elif n == 0:
-        return b"\x00"
-    a = []
-    while n > 0:
-        a.append(pack("B", n & 0xFF))
-        n >>= 8
-    a.reverse()
-    return b"".join(a)
 
 
 def decrypt(crypto, n, d):
@@ -29,17 +15,18 @@ def encrypt(message, n, e):
 def vencrypt(n, e, src, out):
     from random import SystemRandom
     from .varint import encode, encode_stream
-    from sys import stderr
+    # from sys import stderr
 
     random = SystemRandom()
     bits_max = n.bit_length()
     q, r = divmod(bits_max - 1, 8)
     bytes_max = q if q > 0 else q + 1
+    getrandbits = random.getrandbits
 
     def mkprefix(x):
-        return bytes(encode(random.getrandbits(random.randrange(32, 48)))) + bytes(
-        encode(x)
-    )
+        return bytes(encode(getrandbits(random.randrange(32, 48)))) + bytes(
+            encode(x)
+        )
 
     i = 0
     prefix = mkprefix(i)

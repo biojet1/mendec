@@ -1,5 +1,5 @@
-from ocli import param, arg, flag, Main
-from ocli.extra import Counter, BasicLog
+from ocli import arg, Main
+from ocli.extra import BasicLog
 
 from .pick import Crypt
 
@@ -10,7 +10,7 @@ class Decrypt(Crypt, BasicLog, Main):
     app_name = "decrypt"
 
     def start(self, *args, **kwargs):
-        from ..message import encrypt, decrypt
+        from ..message import decrypt
         from .pick import parse_keyfile, write_to, read_from, as_source, as_sink
 
         # parse the key file
@@ -18,7 +18,6 @@ class Decrypt(Crypt, BasicLog, Main):
         # get n, e, d
         d = desc["d"] if "d" in desc else desc["e"]
         if self.short:
-            # decrypt
             cypher = read_from(self.cypher)
 
             if self.encoding == "ub64":

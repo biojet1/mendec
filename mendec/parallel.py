@@ -48,8 +48,10 @@ def getprime(nbits, poolsize):
 
     # Create processes
     try:
-        procs = [mp.Process(target=_find_prime, args=(nbits, pipe_send))
-                 for _ in range(poolsize)]
+        procs = [
+            mp.Process(target=_find_prime, args=(nbits, pipe_send))
+            for _ in range(poolsize)
+        ]
         # Start processes
         for p in procs:
             p.start()
@@ -66,10 +68,10 @@ def getprime(nbits, poolsize):
     return result
 
 
-__all__ = ['getprime']
+__all__ = ["getprime"]
 
-if __name__ == '__main__':
-    print('Running doctests 1000x or until failure')
+if __name__ == "__main__":
+    print("Running doctests 1000x or until failure")
     import doctest
 
     for count in range(100):
@@ -78,6 +80,6 @@ if __name__ == '__main__':
             break
 
         if count % 10 == 0 and count:
-            print('%i times' % count)
+            print("%i times" % count)
 
-    print('Doctests done')
+    print("Doctests done")
