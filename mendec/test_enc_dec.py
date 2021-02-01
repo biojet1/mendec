@@ -11,7 +11,9 @@ class Test(unittest.TestCase):
 
         enb = BytesIO()
 
-        ints = [random.getrandbits(b) for b in (8, 4 * 8, 4 * 8, 444 * 8, 4444 * 8)]
+        bits = (8, 4 * 8, 444 * 8, 4444 * 8)
+
+        ints = [random.getrandbits(b) for b in bits]
         for i in ints:
             encode_stream(enb, i)
 
@@ -21,11 +23,13 @@ class Test(unittest.TestCase):
             self.assertEqual(i, j)
         self.assertEqual(deb.read(), b"")
 
+        # print(usage(x))
+
     def test_enc_dec(self):
 
+        from os import urandom
         from .message import encrypt, decrypt
         from .key import newkeys
-        from os import urandom
 
         def try1(bits, accurate, pool):
             n, e, d = newkeys(bits, accurate, pool)
@@ -35,6 +39,9 @@ class Test(unittest.TestCase):
             bytes_max = q if q > 0 else q + 1
             for s in (bytes_max, bytes_max // 4, bytes_max // 3, bytes_max // 2, 1):
                 message = urandom(s)
+                message = message.strip(b"\x00")
+                if not message:
+                    message = b"\x42"
 
                 encrypted = encrypt(message, n, e)
                 decrypted = decrypt(encrypted, n, d)

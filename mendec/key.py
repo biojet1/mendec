@@ -1,9 +1,9 @@
 from logging import debug, info, error
 from .utils import randint
 
+
 def extended_gcd(a, b):
-    """Returns a tuple (r, i, j) such that r = gcd(a, b) = ia + jb
-    """
+    """Returns a tuple (r, i, j) such that r = gcd(a, b) = ia + jb"""
     # r = gcd(a,b) i = multiplicitive inverse of a mod b
     #      or      j = multiplicitive inverse of b mod a
     # Neg return values for i or j are made positive mod b or a respectively
@@ -29,10 +29,12 @@ def extended_gcd(a, b):
 class NotRelativePrimeError(ValueError):
     def __init__(self, a, b, d, msg=None):
         super(NotRelativePrimeError, self).__init__(
-            msg or "%d and %d are not relatively prime, divider=%i" % (a, b, d))
+            msg or "%d and %d are not relatively prime, divider=%i" % (a, b, d)
+        )
         self.a = a
         self.b = b
         self.d = d
+
 
 def inverse(x, n):
     """Returns the inverse of x % n under multiplication, a.k.a x^-1 (mod n)
@@ -49,6 +51,7 @@ def inverse(x, n):
         raise NotRelativePrimeError(x, n, divider)
 
     return inv
+
 
 def find_p_q(nbits, getprime_func, accurate=True):
     total_bits = nbits * 2
@@ -125,7 +128,6 @@ def calculate_keys_custom_exponent(p, q):
         except NotRelativePrimeError as ex:
             error("{!r} try again".format(ex))
 
-
     if (exponent * d) % phi_n != 1:
         raise ValueError(
             "e (%d) and d (%d) are not mult. inv. modulo "
@@ -139,10 +141,10 @@ def gen_keys(nbits, getprime_func, accurate=True):
     i = 0
     while True:
         i += 1
-        info(f"{i}\tFind p, q")
+        info("%r\tFind p, q", i)
         (p, q) = find_p_q(nbits // 2, getprime_func, accurate)
         try:
-            info(f"\tCalc e, d")
+            info("\tCalc e, d")
             (e, d) = calculate_keys_custom_exponent(p, q)
             break
         except ValueError:
@@ -167,6 +169,7 @@ def newkeys(nbits, accurate=True, poolsize=1):
         getprime_func = partial(getprime, poolsize=poolsize)
     else:
         from .prime import getprime
+
         getprime_func = getprime
 
     # Generate the key components
@@ -176,40 +179,3 @@ def newkeys(nbits, accurate=True, poolsize=1):
     n = p * q
 
     return n, e, d
-
-
-# if __name__ == "__main__":
-#     from sys import argv, platform, stderr
-#     from datetime import datetime
-#     from .message import encrypt, decrypt
-
-#     bits = 2 * 1024
-#     if len(argv) > 1:
-#         bits = int(argv[1])
-#     n, e, d = newkeys(bits)
-#     from json import dumps
-#     import pprint
-
-#     k = dict(n=n, e=e, d=d)
-#     max_bits = max(v.bit_length() for n, v in k.items())
-#     k[""] = "{} bits, {} bytes, {}".format(
-#         max_bits, max_bits // 8, (datetime.utcnow()).strftime("%Y%b%d_%H%M%S")
-#     )
-
-#     print(
-#         "#",
-#         " ".join(
-#             "{}:{}@{}".format(n, v.bit_length() // 8, v.bit_length())
-#             for n, v in k.items()
-#             if n
-#         ),
-#     )
-#     pprint.pprint(k)
-
-#     t = platform.encode()
-
-#     print("{}\t{!r}".format(len(t), t), file=stderr)
-#     c = encrypt(t, n, e)
-#     print("{}\t{!r}".format(len(c), c), file=stderr)
-#     m = decrypt(c, n, d)
-#     print("{}\t{!r}".format(len(m), m), file=stderr)

@@ -1,4 +1,4 @@
-from ocli import param, arg, flag, Main
+from ocli import arg, flag, param, Main
 from ocli.extra import BasicLog
 
 from ast import literal_eval
@@ -23,7 +23,7 @@ def read_file(path):
 
 def write_to(path, blob):
     if path:
-        with open(path, "wb") as h:
+        with open(path, "wb") as out:
             out.write(blob)
     else:
         from sys import stdout
@@ -40,24 +40,24 @@ def read_from(path):
     return stdin.buffer.read()
 
 
-def as_source(path):
+def as_source(path, mode="rb"):
     if path:
-        return open(path, "rb")
+        return open(path, mode)
 
     from sys import stdin
 
-    return stdin.buffer
+    return stdin.buffer if "b" in mode else stdin
 
 
-def as_sink(path):
+def as_sink(path, mode="wb"):
     if path:
-        return open(path, "wb")
+        return open(path, mode)
     from sys import stdout
 
-    return stdout.buffer
+    return stdout.buffer if "b" in mode else stdout
 
 
-@arg("output", default="-", help="save key to file")
+@arg("output", default=None, help="save key to file")
 @arg("which", required=True, choices=["1", "2", "e", "d"], help="which key to output")
 @arg("keyfile", required=True, help="the key file to extract key")
 class Pick(BasicLog, Main):
@@ -71,17 +71,10 @@ class Pick(BasicLog, Main):
         else:
             desc.pop("d")
 
-        if self.output == "-":
-            from sys import stdout as out
-        else:
-            out = open(self.output, "w")
-        from pprint import pformat
+        with as_sink(self.output, "w") as out:
+            from pprint import pformat
 
-        with out:
             out.write(pformat(desc))
-
-        from json import dumps
-        import pprint
 
 
 ENCS = ["b64", "ub64", "hex"]
@@ -89,7 +82,7 @@ ENCS = ["b64", "ub64", "hex"]
 
 @flag("short", "s", help="short message encryption", default=True)
 @flag("encoding", "e", help="encoding to use", default=None, choices=ENCS)
-@flag("output", "o", help="output to file", default=None)
+@param("output", "o", help="output to file", default=None)
 class Crypt:
     pass
 
