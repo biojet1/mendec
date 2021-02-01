@@ -13,6 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/biojet1/mendec",
     packages=setuptools.find_packages(),
+    install_requires=["ocli"],
     classifiers=[
         "Intended Audience :: Developers",
         "Natural Language :: English",

@@ -30,19 +30,16 @@ class Test(unittest.TestCase):
         self.assertNotEqual(0, call(r"python -m mendec encrypt", shell=True))
 
     def test_example(self):
-        from base64 import b64encode
-        from string import ascii_letters
 
         tmp = mkdtemp()
-        msg = "Attack at Noon"
+        # msg = "Attack at Noon"
 
         chdir(tmp)
         self.shell_ok("python -m mendec keygen --bits 384 --output SECRET_KEY")
         self.shell_ok("python -m mendec pick SECRET_KEY 1 KEY1")
         self.shell_ok("python -m mendec pick SECRET_KEY 2 KEY2")
         self.shell_ok(
-            "printf 'Attack at Noon'"
-            " | python -m mendec encrypt KEY1 -o CYPHER"
+            "printf 'Attack at Noon'" " | python -m mendec encrypt KEY1 -o CYPHER"
         )
         self.shell_ok("python -m mendec decrypt KEY2 < CYPHER")
         self.shell_ok(
