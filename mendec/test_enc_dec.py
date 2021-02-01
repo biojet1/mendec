@@ -49,12 +49,13 @@ class Test(unittest.TestCase):
                 encrypted = encrypt(message, n, d)
                 decrypted = decrypt(encrypted, n, e)
                 self.assertEqual(decrypted, message, s)
-                encrypted = encrypt(message, n, d)
-                decrypted = decrypt(encrypted, n, d)
-                self.assertNotEqual(decrypted, message, s)
-                encrypted = encrypt(message, n, e)
-                decrypted = decrypt(encrypted, n, e)
-                self.assertNotEqual(decrypted, message, s)
+                if len(message) > 2:
+                    encrypted = encrypt(message, n, d)
+                    decrypted = decrypt(encrypted, n, d)
+                    self.assertNotEqual(decrypted, message, s)
+                    encrypted = encrypt(message, n, e)
+                    decrypted = decrypt(encrypted, n, e)
+                    self.assertNotEqual(decrypted, message, s)
 
         for bits in (64, 96, 256):
             for accurate in (True, False):

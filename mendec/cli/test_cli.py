@@ -1,6 +1,8 @@
 import unittest
 from subprocess import call
 from hashlib import md5
+from tempfile import mkdtemp
+from os import chdir, urandom
 
 
 class Test(unittest.TestCase):
@@ -27,9 +29,29 @@ class Test(unittest.TestCase):
         self.assertNotEqual(0, call(r"python -m mendec decrypt", shell=True))
         self.assertNotEqual(0, call(r"python -m mendec encrypt", shell=True))
 
+    def test_example(self):
+        from base64 import b64encode
+        from string import ascii_letters
+
+        tmp = mkdtemp()
+        msg = "Attack at Noon"
+
+        chdir(tmp)
+        self.shell_ok("python -m mendec keygen --bits 384 --output SECRET_KEY")
+        self.shell_ok("python -m mendec pick SECRET_KEY 1 KEY1")
+        self.shell_ok("python -m mendec pick SECRET_KEY 2 KEY2")
+        self.shell_ok(
+            "printf 'Attack at Noon'"
+            " | python -m mendec encrypt KEY1 -o CYPHER"
+        )
+        self.shell_ok("python -m mendec decrypt KEY2 < CYPHER")
+        self.shell_ok(
+            "printf Acknowledge"
+            " | python -m mendec encrypt KEY2"
+            " | python -m mendec decrypt KEY1"
+        )
+
     def test_enc_dec(self):
-        from os import chdir, urandom
-        from tempfile import mkdtemp
         from base64 import b64encode
         from string import ascii_letters
 

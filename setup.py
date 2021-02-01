@@ -13,9 +13,6 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/biojet1/mendec",
     packages=setuptools.find_packages(),
-    install_requires=[
-        "ocli @ https://api.github.com/repos/biojet1/ocli/tarball/master",
-    ],
     classifiers=[
         "Intended Audience :: Developers",
         "Natural Language :: English",
