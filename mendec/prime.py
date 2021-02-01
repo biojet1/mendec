@@ -1,24 +1,8 @@
-# -*- coding: utf-8 -*-
-#
-#  Copyright 2011 Sybren A. Stüvel <sybren@stuvel.eu>
-#
-#  Licensed under the Apache License, Version 2.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
-#
-#      https://www.apache.org/licenses/LICENSE-2.0
-#
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS,
-#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language governing permissions and
-#  limitations under the License.
-
 """Numerical functions related to primes.
 
-Implementation based on the book Algorithm Design by Michael T. Goodrich and
-Roberto Tamassia, 2002.
+Copied from Python-RSA
 """
+
 from .utils import read_random_odd_int, randint
 
 __all__ = ["getprime", "are_relatively_prime"]
@@ -181,18 +165,3 @@ def are_relatively_prime(a, b):
 
     d = gcd(a, b)
     return d == 1
-
-
-if __name__ == "__main__":
-    print("Running doctests 1000x or until failure")
-    import doctest
-
-    for count in range(1000):
-        (failures, tests) = doctest.testmod()
-        if failures:
-            break
-
-        if count % 100 == 0 and count:
-            print("%i times" % count)
-
-    print("Doctests done")

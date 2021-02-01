@@ -40,6 +40,8 @@ class Test(unittest.TestCase):
             for s in (bytes_max, bytes_max // 4, bytes_max // 3, bytes_max // 2, 1):
                 message = urandom(s)
                 message = message.strip(b"\x00")
+                if not message:
+                    message = b"\x42"
 
                 encrypted = encrypt(message, n, e)
                 decrypted = decrypt(encrypted, n, d)
@@ -47,19 +49,15 @@ class Test(unittest.TestCase):
                 encrypted = encrypt(message, n, d)
                 decrypted = decrypt(encrypted, n, e)
                 self.assertEqual(decrypted, message, s)
-                encrypted = encrypt(message, n, d)
-                decrypted = decrypt(encrypted, n, d)
-                self.assertNotEqual(decrypted, message, s)
-                encrypted = encrypt(message, n, e)
-                decrypted = decrypt(encrypted, n, e)
-                self.assertNotEqual(decrypted, message, s)
+                if len(message) > 2:
+                    encrypted = encrypt(message, n, d)
+                    decrypted = decrypt(encrypted, n, d)
+                    self.assertNotEqual(decrypted, message, s)
+                    encrypted = encrypt(message, n, e)
+                    decrypted = decrypt(encrypted, n, e)
+                    self.assertNotEqual(decrypted, message, s)
 
         for bits in (64, 96, 256):
             for accurate in (True, False):
                 for pool in (1, 2, 3):
                     try1(bits, accurate, pool)
-
-
-# check_output
-
-# cat '/media/biojet1/OS/tmp/psd.urls.txt' | python -m mendec.cli.encrypt key --no-short | python -m mendec.cli.decrypt key --no-short

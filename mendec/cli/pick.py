@@ -1,56 +1,27 @@
-from ocli import arg, flag, Main
-from ocli.extra import BasicLog
-
 from ast import literal_eval
+from ocli import arg, flag, param, Main
+from ocli.extra import BasicLog
 
 
 def parse_keyfile(path):
-    return parse_key(read_file(path))
+    with as_source(path, "r") as r:
+        return parse_key(r.read())
 
 
 def parse_key(text):
     return literal_eval(text)
 
 
-def read_file(path):
-    if path in ("-", None):
-        from sys import stdin
-
-        return stdin.read()
-    with open(path, "r") as h:
-        return h.read()
-
-
-def write_to(path, blob):
-    if path:
-        with open(path, "wb") as out:
-            out.write(blob)
-    else:
-        from sys import stdout
-
-        stdout.buffer.write(blob)
-
-
-def read_from(path):
-    if path:
-        with open(path, "rb") as h:
-            return h.read()
-    from sys import stdin
-
-    return stdin.buffer.read()
-
-
 def as_source(path, mode="rb"):
-    if path:
+    if path and path != "-":
         return open(path, mode)
-
     from sys import stdin
 
     return stdin.buffer if "b" in mode else stdin
 
 
 def as_sink(path, mode="wb"):
-    if path:
+    if path and path != "-":
         return open(path, mode)
     from sys import stdout
 
@@ -77,12 +48,8 @@ class Pick(BasicLog, Main):
             out.write(pformat(desc))
 
 
-ENCS = ["b64", "ub64", "hex"]
-
-
-@flag("short", "s", help="short message encryption", default=True)
-@flag("encoding", "e", help="encoding to use", default=None, choices=ENCS)
-@flag("output", "o", help="output to file", default=None)
+@flag("short", "s", help="short message encryption", default=False)
+@param("output", "o", help="output to file", default=None)
 class Crypt:
     pass
 

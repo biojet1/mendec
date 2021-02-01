@@ -1,3 +1,6 @@
+"""
+Copied from Python-RSA
+"""
 from binascii import hexlify
 from struct import pack
 from os import urandom
@@ -12,38 +15,6 @@ def byte_size(n):
         return 1
     q, r = divmod(n.bit_length(), 8)
     return (q + 1) if r else q
-
-
-# def int2bytes(number, block_size=0):
-#     if number < 0:
-#         raise ValueError("Negative numbers cannot be used: %i" % number)
-
-#     # Do some bounds checking
-#     if number == 0:
-#         needed_bytes = 1
-#         raw_bytes = [b"\x00"]
-#     else:
-#         needed_bytes = byte_size(number)
-#         raw_bytes = []
-
-#     if block_size > 0 and needed_bytes > block_size:
-#         raise OverflowError(
-#             "Needed %i bytes for number, but block size "
-#             "is %i" % (needed_bytes, block_size)
-#         )
-
-#     # Convert the number to bytes.
-#     while number > 0:
-#         raw_bytes.insert(0, pack("B", number & 0xFF))
-#         number >>= 8
-
-#     # Pad with zeroes to fill the block
-#     if block_size > 0:
-#         padding = (block_size - needed_bytes) * b"\x00"
-#     else:
-#         padding = b""
-
-#     return padding + b"".join(raw_bytes)
 
 
 def int2bytes(n):

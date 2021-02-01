@@ -10,6 +10,7 @@ from .cli import decrypt, encrypt, keygen, pick
         "pick": pick.Pick,
     },
     help="select sub command",
+    required=True
 )
 class Top(Main):
     log_level = "INFO"

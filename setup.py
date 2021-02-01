@@ -4,18 +4,16 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="mendec-biojet1",  # Replace with your own username
-    version="0.0.1",
+    name="mendec",
+    version="0.0.2",
     author="biojet1",
     author_email="biojet1@gmail.com",
-    description="Message encrytion using RSA algo",
+    description="Message encrytion using RSA algorithm",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/biojet1/mendec",
     packages=setuptools.find_packages(),
-    install_requires=[
-        'ocli @ https://api.github.com/repos/biojet1/ocli/tarball/master',
-    ],
+    install_requires=["ocli"],
     classifiers=[
         "Intended Audience :: Developers",
         "Natural Language :: English",
