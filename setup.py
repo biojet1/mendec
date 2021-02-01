@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="mendec",
-    version="0.0.1",
+    version="0.0.2",
     author="biojet1",
     author_email="biojet1@gmail.com",
     description="Message encrytion using RSA algorithm",
