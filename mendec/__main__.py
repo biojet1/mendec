@@ -10,10 +10,14 @@ from .cli import decrypt, encrypt, keygen, pick
         "pick": pick.Pick,
     },
     help="select sub command",
-    required=True
+    required=True,
 )
 class Top(Main):
-    log_level = "INFO"
+    pass
+
+
+def main():
+    return Top().main()
 
 
 (__name__ == "__main__") and Top().main()
