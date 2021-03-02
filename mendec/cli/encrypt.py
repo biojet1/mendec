@@ -1,12 +1,22 @@
-from ocli import arg, Main
-from ocli.extra import BasicLog
+from ocli import arg, Main, Base
+from ocli.extra import BasicLog, LogOpt
 
 from .pick import Crypt
 
 
-@arg("message", default=None, help="the message file")
-@arg("key", required=True, help="the key file")
-class Encrypt(Crypt, BasicLog, Main):
+# @arg("message", default=None, help="the message file")
+# @arg("key", required=True, help="the key file")
+# class Encrypt(Crypt, BasicLog, Main):
+class Encrypt(Crypt, LogOpt, Base):
+    def options(self, opt):
+        super().options(
+            opt
+            # 1st argument
+            .arg("key", required=True, help="the key file")
+            # 2nd argument
+            .arg("message", default=None, help="the message file")
+        )
+
     def start(self, *args, **kwargs):
         from .pick import parse_keyfile, as_source, as_sink
 

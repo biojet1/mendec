@@ -15,6 +15,7 @@ def encrypt(message, n, e):
 def vencrypt(n, e, src, out):
     from random import SystemRandom
     from .varint import encode, encode_stream
+
     # from sys import stderr
 
     random = SystemRandom()
@@ -24,9 +25,7 @@ def vencrypt(n, e, src, out):
     getrandbits = random.getrandbits
 
     def mkprefix(x):
-        return bytes(encode(getrandbits(random.randrange(32, 48)))) + bytes(
-            encode(x)
-        )
+        return bytes(encode(getrandbits(random.randrange(32, 48)))) + bytes(encode(x))
 
     i = 0
     prefix = mkprefix(i)
