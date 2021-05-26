@@ -3,13 +3,14 @@
 Copied from Python-RSA
 """
 
-import multiprocessing as mp
+from multiprocessing import Process, Pipe
 
 from .prime import is_prime
 from .utils import read_random_odd_int
 
 
 def _find_prime(nbits, pipe):
+    # type: (int, Any) -> None
     while True:
         integer = read_random_odd_int(nbits)
 
@@ -20,13 +21,13 @@ def _find_prime(nbits, pipe):
 
 
 def getprime(nbits, poolsize):
-
-    (pipe_recv, pipe_send) = mp.Pipe(duplex=False)
+    # type: (int, int) -> int
+    (pipe_recv, pipe_send) = Pipe(duplex=False)
 
     # Create processes
     try:
         procs = [
-            mp.Process(target=_find_prime, args=(nbits, pipe_send))
+            Process(target=_find_prime, args=(nbits, pipe_send))
             for _ in range(poolsize)
         ]
         # Start processes
@@ -44,5 +45,10 @@ def getprime(nbits, poolsize):
 
     return result
 
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Any
 
 __all__ = ["getprime"]

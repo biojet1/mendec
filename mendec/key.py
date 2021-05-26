@@ -3,6 +3,7 @@ from .utils import randint
 
 
 def extended_gcd(a, b):
+    # type: (int, int) -> Tuple[int, int, int]
     """Returns a tuple (r, i, j) such that r = gcd(a, b) = ia + jb"""
     # r = gcd(a,b) i = multiplicitive inverse of a mod b
     #      or      j = multiplicitive inverse of b mod a
@@ -27,7 +28,8 @@ def extended_gcd(a, b):
 
 
 class NotRelativePrimeError(ValueError):
-    def __init__(self, a, b, d, msg=None):
+    def __init__(self, a, b, d, msg=""):
+        # type: (int, int, int, str) -> None
         super(NotRelativePrimeError, self).__init__(
             msg or "%d and %d are not relatively prime, divider=%i" % (a, b, d)
         )
@@ -37,6 +39,7 @@ class NotRelativePrimeError(ValueError):
 
 
 def inverse(x, n):
+    # type: (int, int) -> int
     """Returns the inverse of x % n under multiplication, a.k.a x^-1 (mod n)
 
     >>> inverse(7, 4)
@@ -54,6 +57,7 @@ def inverse(x, n):
 
 
 def find_p_q(nbits, getprime_func, accurate=True):
+    # type: (int, Callable[[int], int], bool) -> Tuple[int, int]
     total_bits = nbits * 2
 
     # Make sure that p and q aren't too close or the factoring programs can
@@ -105,6 +109,7 @@ def find_p_q(nbits, getprime_func, accurate=True):
 
 
 def calculate_keys_custom_exponent(p, q):
+    # type: (int, int) -> Tuple[int, int]
     """Calculates an encryption and a decryption key given p, q and an exponent,
     and returns them as a tuple (e, d)
 
@@ -138,6 +143,7 @@ def calculate_keys_custom_exponent(p, q):
 
 
 def gen_keys(nbits, getprime_func, accurate=True):
+    # type: (int, Callable[[int], int], bool) -> Tuple[int, int, int, int]
     i = 0
     while True:
         i += 1
@@ -154,7 +160,7 @@ def gen_keys(nbits, getprime_func, accurate=True):
 
 
 def newkeys(nbits, accurate=True, poolsize=1):
-
+    # type: (int, bool, int) -> Tuple[int, int, int]
     if nbits < 16:
         raise ValueError("Key too small")
 
@@ -163,19 +169,26 @@ def newkeys(nbits, accurate=True, poolsize=1):
 
     # Determine which getprime function to use
     if poolsize > 1:
-        from .parallel import getprime
+        from .parallel import getprime as getprimep
         from functools import partial
 
-        getprime_func = partial(getprime, poolsize=poolsize)
+        # Generate the key components
+        (p, q, e, d) = gen_keys(
+            nbits, partial(getprimep, poolsize=poolsize), accurate=accurate
+        )
     else:
         from .prime import getprime
 
-        getprime_func = getprime
-
-    # Generate the key components
-    (p, q, e, d) = gen_keys(nbits, getprime_func, accurate=accurate)
+        # Generate the key components
+        (p, q, e, d) = gen_keys(nbits, getprime, accurate=accurate)
 
     # Create the key objects
     n = p * q
 
     return n, e, d
+
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import *

@@ -9,6 +9,7 @@ __all__ = ["getprime", "are_relatively_prime"]
 
 
 def gcd(p, q):
+    # type: (int, int) -> int
     """Returns the greatest common divisor of p and q
 
     >>> gcd(48, 180)
@@ -21,6 +22,7 @@ def gcd(p, q):
 
 
 def get_primality_testing_rounds(number):
+    # type: (int) -> int
     """Returns minimum number of rounds for Miller-Rabing primality testing,
     based on number bitsize.
 
@@ -47,6 +49,7 @@ def get_primality_testing_rounds(number):
 
 
 def miller_rabin_primality_testing(n, k):
+    # type: (int, int) -> bool
     """Calculates whether n is composite (which is always correct) or prime
     (which theoretically is incorrect with error probability 4**-k), by
     applying Miller-Rabin primality testing.
@@ -100,6 +103,7 @@ def miller_rabin_primality_testing(n, k):
 
 
 def is_prime(number):
+    # type: (int) -> bool
     """Returns True if the number is prime, and False otherwise.
 
     >>> is_prime(2)
@@ -126,6 +130,7 @@ def is_prime(number):
 
 
 def getprime(nbits):
+    # type: (int) -> int
     """Returns a prime number that can be stored in 'nbits' bits.
 
     >>> p = getprime(128)
@@ -154,6 +159,7 @@ def getprime(nbits):
 
 
 def are_relatively_prime(a, b):
+    # type: (int, int) -> bool
     """Returns True if a and b are relatively prime, and False if they
     are not.
 

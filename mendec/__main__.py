@@ -1,19 +1,26 @@
-from ocli import sub, Main
-from .cli import decrypt, encrypt, keygen, pick
+from ocli import Base
 
 
-@sub(
-    {
-        "decrypt": decrypt.Decrypt,
-        "encrypt": encrypt.Encrypt,
-        "keygen": keygen.KeyGen,
-        "pick": pick.Pick,
-    },
-    help="select sub command",
-    required=True
-)
-class Top(Main):
-    log_level = "INFO"
+class Top(Base):
+    def options(self, opt):
+        from .cli import decrypt, encrypt, keygen, pick
+
+        super().options(
+            opt.sub(
+                {
+                    "decrypt": decrypt.Decrypt,
+                    "encrypt": encrypt.Encrypt,
+                    "keygen": keygen.KeyGen,
+                    "pick": pick.Pick,
+                },
+                help="select sub command",
+                required=True,
+            )
+        )
+
+
+def main():
+    return Top().main()
 
 
 (__name__ == "__main__") and Top().main()

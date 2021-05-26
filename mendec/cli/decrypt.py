@@ -1,17 +1,24 @@
-from ocli import arg, Main
-from ocli.extra import BasicLog
-
+from ocli import Base
+from ocli.extra import LogOpt
 from .pick import Crypt
 
 
-@arg("cypher", default=None, help="the encrypted file")
-@arg("key", required=True, help="the key file")
-class Decrypt(Crypt, BasicLog, Main):
+class Decrypt(Crypt, LogOpt, Base):
+    def options(self, opt):
+        super().options(
+            opt
+            # 1st argument
+            .arg("key", required=True, help="the key file")
+            # 2nd argument
+            .arg("cypher", default=None, help="the encrypted file")
+        )
+
     def start(self, *args, **kwargs):
-        from .pick import parse_keyfile, as_source, as_sink
+        from .pick import as_source, as_sink
+        from ..keyfile import find_key, parse_keyfile
 
         # parse the key file
-        desc = parse_keyfile(self.key)
+        desc = parse_keyfile(find_key(self.key))
         # get n, e, d
         d = desc["d"] if "d" in desc else desc["e"]
         if self.short:
