@@ -11,6 +11,7 @@ class KeyGen(LogOpt, Base):
     log_format = "%(asctime)s %(levelname)s: %(message)s"
 
     def options(self, opt):
+        opt.prog = 'python -m mendec keygen'
         super().options(
             opt
             # --bits 256, -b 256

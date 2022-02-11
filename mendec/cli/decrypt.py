@@ -5,6 +5,7 @@ from .pick import Crypt
 
 class Decrypt(Crypt, LogOpt, Base):
     def options(self, opt):
+        opt.prog = 'python -m mendec decrypt'
         super().options(
             opt
             # 1st argument

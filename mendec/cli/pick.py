@@ -31,6 +31,7 @@ class Pick(LogOpt, Base):
     app_name = "pick"
 
     def options(self, opt):
+        opt.prog = 'python -m mendec pick'
         super().options(
             opt
             # first argument
