@@ -7,10 +7,12 @@ from os import urandom
 
 
 def bytes2int(raw_bytes):
+    # type: (bytes) -> int
     return int(hexlify(raw_bytes), 16)
 
 
 def byte_size(n):
+    # type: (int) -> int
     if n == 0:
         return 1
     q, r = divmod(n.bit_length(), 8)
@@ -18,6 +20,7 @@ def byte_size(n):
 
 
 def int2bytes(n):
+    # type: (int) -> bytes
     if n < 0:
         raise ValueError("Negative numbers cannot be used: %i" % n)
     elif n == 0:
@@ -34,6 +37,7 @@ def int2bytes(n):
 
 
 def read_random_bits(nbits):
+    # type: (int) -> bytes
     """Reads 'nbits' random bits.
 
     If nbits isn't a whole number of bytes, an extra byte will be appended with
@@ -55,6 +59,7 @@ def read_random_bits(nbits):
 
 
 def read_random_int(nbits):
+    # type: (int) -> int
     """Reads a random integer of approximately nbits bits."""
 
     randomdata = read_random_bits(nbits)
@@ -68,6 +73,7 @@ def read_random_int(nbits):
 
 
 def read_random_odd_int(nbits):
+    # type: (int) -> int
     """Reads a random odd integer of approximately nbits bits.
 
     >>> read_random_odd_int(512) & 1
@@ -81,6 +87,7 @@ def read_random_odd_int(nbits):
 
 
 def randint(maxvalue):
+    # type: (int) -> int
     """Returns a random integer x with 1 <= x <= maxvalue
 
     May take a very long time in specific situations. If maxvalue needs N bits

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="mendec",
-    version="0.0.4",
+    version="0.0.5",
     author="biojet1",
     author_email="biojet1@gmail.com",
     description="Message encrytion using RSA algorithm",

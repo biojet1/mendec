@@ -1,14 +1,11 @@
-from ocli import arg, Main, Base
-from ocli.extra import BasicLog, LogOpt
-
+from ocli import Base
+from ocli.extra import LogOpt
 from .pick import Crypt
 
 
-# @arg("message", default=None, help="the message file")
-# @arg("key", required=True, help="the key file")
-# class Encrypt(Crypt, BasicLog, Main):
 class Encrypt(Crypt, LogOpt, Base):
     def options(self, opt):
+        opt.prog = 'python -m mendec encrypt'
         super().options(
             opt
             # 1st argument
@@ -18,10 +15,11 @@ class Encrypt(Crypt, LogOpt, Base):
         )
 
     def start(self, *args, **kwargs):
-        from .pick import parse_keyfile, as_source, as_sink
+        from .pick import as_source, as_sink
+        from ..keyfile import find_key, parse_keyfile
 
         # parse the key file
-        desc = parse_keyfile(self.key)
+        desc = parse_keyfile(find_key(self.key))
         # get n, e, d
         e = desc["e"] if "e" in desc else desc["d"]
         if self.short:

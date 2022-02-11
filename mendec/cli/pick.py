@@ -1,6 +1,6 @@
 from ast import literal_eval
-from ocli import arg, flag, param, Main, Base
-from ocli.extra import BasicLog, LogOpt
+from ocli import Base
+from ocli.extra import LogOpt
 
 
 def parse_keyfile(path):
@@ -28,14 +28,11 @@ def as_sink(path, mode="wb"):
     return stdout.buffer if "b" in mode else stdout
 
 
-# @arg("output", default=None, help="save key to file")
-# @arg("which", required=True, choices=["1", "2", "e", "d"], help="which key to output")
-# @arg("keyfile", required=True, help="the key file to extract key")
-# class Pick(BasicLog, Main):
 class Pick(LogOpt, Base):
     app_name = "pick"
 
     def options(self, opt):
+        opt.prog = "python -m mendec pick"
         super().options(
             opt
             # first argument
@@ -65,16 +62,12 @@ class Pick(LogOpt, Base):
             out.write(pformat(desc))
 
 
-# @flag("short", "s", help="short message encryption", default=False)
-# @param("output", "o", help="output to file", default=None)
 class Crypt:
     def options(self, opt):
         super().options(
             opt
             # --short, -s
-            .flag(
-                "short", "s", help="short message encryption", default=False
-            )
+            .flag("short", "s", help="short message encryption", default=False)
             # --output FILE, -o FILE
             .param("output", "o", help="output to file", default=None)
         )

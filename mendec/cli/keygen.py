@@ -1,23 +1,17 @@
-from ocli import Base, Main, flag, param
-from ocli.extra import BasicLog, LogOpt
+from ocli import Base
+from ocli.extra import LogOpt
 
 
 def x8(v):
     return int(v) * 8
 
 
-# @param("bits", "b", default=2048, type=int, help="How many bits")
-# @param("bytes", "B", type=x8, dest="bits", help="How many bits in bytes")
-# @param("pool", "p", default=1, type=int, help="How many process to generate primes")
-# @param("output", "o", help="output to file", default=None)
-# @flag("test", "t", default=True, help="Test the generated key")
-# @flag("near", "n", default=True, dest="accurate", help="Not exact bits is ok")
-# class KeyGen(BasicLog, Main):
 class KeyGen(LogOpt, Base):
     app_name = "keygen"
     log_format = "%(asctime)s %(levelname)s: %(message)s"
 
     def options(self, opt):
+        opt.prog = 'python -m mendec keygen'
         super().options(
             opt
             # --bits 256, -b 256
