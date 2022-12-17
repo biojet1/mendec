@@ -112,56 +112,19 @@ class IterStream(RawIOBase):
         return len(output)
 
 
-#     return io.BufferedReader(IterStream(), buffer_size=buffer_size)
+def main(N, D):
+    if len(argv) > 1 and ("-b" in argv):
+        r = BufferedReader(IterStream(decode_base64_source(stdin.buffer)))
+    else:
+        r = stdin.buffer
+    with r, stdout.buffer as w:
+        vdecrypt(N, D, r, w)
 
 
-# def iterable_to_stream(iterable, buffer_size=io.DEFAULT_BUFFER_SIZE):
-#     """
-#     Lets you use an iterable (e.g. a generator) that yields bytestrings as a read-only
-#     input stream.
-
-#     The stream implements Python 3's newer I/O API (available in Python 2's io module).
-#     For efficiency, the stream is buffered.
-#     """
-#     class IterStream(io.RawIOBase):
-#         def __init__(self):
-#             self.leftover = None
-#         def readable(self):
-#             return True
-#         def readinto(self, b):
-#             try:
-#                 l = len(b)  # We're supposed to return at most this much
-#                 chunk = self.leftover or next(iterable)
-#                 output, self.leftover = chunk[:l], chunk[l:]
-#                 b[:len(output)] = output
-#                 return len(output)
-#             except StopIteration:
-#                 return 0    # indicate EOF
-#     return io.BufferedReader(IterStream(), buffer_size=buffer_size)
-
-if len(argv) > 1 and ("-b" in argv):
-    r = BufferedReader(IterStream(decode_base64_source(stdin.buffer)))
-else:
-    r = stdin.buffer
-with r, stdout.buffer as w:
-    vdecrypt(N, D, r, w)
-
-# data = rb"""TGludXggQUtJVEEgNS4xNS4wLTU2LWdlbmVyaWMgIzYyLVVidW50dSBTTVAgVHVlIE5vdiAyMiAx
-# OTo1NDoxNCBVVEMgMjAyMiB4ODZfNjQgeDg2XzY0IHg4Nl82NCBHTlUvTGludXgK"""
-# # Linux AKITA 5.15.0-56-generic #62-Ubuntu SMP Tue Nov 22 19:54:14 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
-# from io import BytesIO
-
-# # i = decode_base64_source(BytesIO(data), 63)
-
-# # print(next(i))
-# # print(next(i))
-# # print(next(i))
-
-# # r = BufferedReader(IterStream(decode_base64_source(BytesIO(data), 96)))
-# r = BufferedReader(IterStream(decode_base64_source(stdin.buffer, 96)))
-# print(r.read(63))
-# print(r.read(63))
-# print(r.read(63))
-
-
-# # print(next(i))
+__name__ == "__main__" and main(744487561519699337969, 312084042341263374101)
+{
+    "": "70 bits, 8 bytes, 2022Dec17_073642",
+    "d": 312084042341263374101,
+    "e": 716435957194893448301,
+    "n": 744487561519699337969,
+}
