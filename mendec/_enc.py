@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from sys import stdin, stdout, argv
 from binascii import hexlify
 from struct import pack
@@ -67,22 +68,18 @@ def vencrypt(n, e, src, out):
     block = src.read(bytes_max - len(prefix))
     while block:
         cypher = encrypt(prefix + block, n, e)
-        # print('E', i, len(cypher), file=stderr)
         encode_stream(out, len(cypher))
         out.write(cypher)
-        # print('blob', blob)
         i += 1
         prefix = mkprefix(i)
         block = src.read(bytes_max - len(prefix))
 
 
-def main(N, E):
+if __name__ == "__main__":
     r = stdin.buffer
-    with r, stdout.buffer as w:
-        vencrypt(N, E, r, w)
-
-
-__name__ == "__main__" and main(744487561519699337969, 716435957194893448301)
+    with stdout.buffer as w, r:
+        vencrypt(N, X, r, w)
+#
 {
     "": "70 bits, 8 bytes, 2022Dec17_073642",
     "d": 312084042341263374101,

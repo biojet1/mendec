@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from sys import stdin, stdout, argv
 from binascii import hexlify
 from struct import pack
@@ -112,16 +113,21 @@ class IterStream(RawIOBase):
         return len(output)
 
 
-def main(N, D):
-    if len(argv) > 1 and ("-b" in argv):
-        r = BufferedReader(IterStream(decode_base64_source(stdin.buffer)))
-    else:
-        r = stdin.buffer
-    with r, stdout.buffer as w:
-        vdecrypt(N, D, r, w)
+if __name__ == "__main__":
+    r = stdin.buffer
+    w = stdout.buffer
+    if len(argv) > 1:
+        if "-b" in argv:
+            r = BufferedReader(IterStream(decode_base64_source(r)))
+        if "-x" in argv:
+            from subprocess import Popen, PIPE
 
+            p = Popen("/bin/sh", stdin=PIPE)
+            w = p.stdin
+    with r, w:
+        vdecrypt(N, X, r, w)
+#
 
-__name__ == "__main__" and main(744487561519699337969, 312084042341263374101)
 {
     "": "70 bits, 8 bytes, 2022Dec17_073642",
     "d": 312084042341263374101,

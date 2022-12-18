@@ -24,9 +24,9 @@ class Script(LogOpt, Base):
         )
 
     def start(self, *args, **kwargs):
+        from os.path import join, dirname
         from ..keyfile import find_key, parse_keyfile
         from .pick import as_source, as_sink
-        from os.path import join, dirname
 
         desc = parse_keyfile(self.keyfile)
         cd = dirname(dirname(__file__))
@@ -40,7 +40,9 @@ class Script(LogOpt, Base):
         with as_source(script) as r, as_sink(self.output) as w:
             for l in r:
                 if b"__name__" in l:
-                    w.write(f'__name__ == "__main__" and main({n}, {x})'.encode())
+                    w.write(f"N = {n}\n".encode())
+                    w.write(f"X = {x}\n".encode())
+                if l.startswith(b'#') and l.strip() == b'#':
                     break
                 w.write(l)
 
