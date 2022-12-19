@@ -22,7 +22,7 @@ class Encrypt(Crypt, LogOpt, Base):
         desc = parse_keyfile(find_key(self.key))
         # get n, e, d
         e = desc["e"] if "e" in desc else desc["d"]
-        r, w = stdin.buffer, stdout.buffer
+        r, w = as_source(self.message), as_sink(self.output)
 
         if self.short:
             from ..message import encrypt
