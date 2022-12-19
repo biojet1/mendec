@@ -108,4 +108,4 @@ if __name__ == "__main__":
             w = Base64Sink(w)
 
     with w, r:
-        vencrypt(N, X, r, w)
+        vencrypt(N, X, r, w) # noqa: F821 # undefined name

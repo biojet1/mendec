@@ -125,4 +125,4 @@ if __name__ == "__main__":
             p = Popen("/bin/sh", stdin=PIPE)
             w = p.stdin
     with r, w:
-        vdecrypt(N, X, r, w)
+        vdecrypt(N, X, r, w) # noqa: F821 # undefined name
