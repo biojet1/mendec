@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# noqa: F821 # undefined name
+
 from binascii import hexlify
 from struct import pack
 
@@ -108,4 +110,4 @@ if __name__ == "__main__":
             w = Base64Sink(w)
 
     with w, r:
-        vencrypt(N, X, r, w) # noqa: F821 # undefined name
+        vencrypt(N, X, r, w)
