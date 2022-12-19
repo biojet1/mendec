@@ -1,5 +1,5 @@
 # MEnDec
-![Python Logo](https://www.python.org/static/community_logos/python-logo.png "Sample inline image")
+![Python Logo](mendec.png)
 ![Python package](https://github.com/biojet1/mendec/workflows/Python%20package/badge.svg)
 ![Upload Python Package](https://github.com/biojet1/mendec/workflows/Upload%20Python%20Package/badge.svg)
 
