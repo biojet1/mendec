@@ -5,7 +5,7 @@ from .pick import Crypt
 
 class Decrypt(Crypt, LogOpt, Base):
     def options(self, opt):
-        opt.prog = 'python -m mendec decrypt'
+        opt.prog = "python -m mendec decrypt"
         super().options(
             opt
             # 1st argument
@@ -22,15 +22,17 @@ class Decrypt(Crypt, LogOpt, Base):
         desc = parse_keyfile(find_key(self.key))
         # get n, e, d
         d = desc["d"] if "d" in desc else desc["e"]
+        r = as_source(self.cypher)
+        w = as_sink(self.output)
         if self.short:
             from ..message import decrypt
 
-            with as_source(self.cypher) as r, as_sink(self.output) as w:
+            with w, r:
                 w.write(decrypt(r.read(), desc["n"], d))
         else:
             from ..message import vdecrypt
 
-            with as_source(self.cypher) as r, as_sink(self.output) as w:
+            with w, r:
                 vdecrypt(desc["n"], d, r, w)
 
 

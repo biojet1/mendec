@@ -3,7 +3,7 @@ from ocli import Base
 
 class Top(Base):
     def options(self, opt):
-        from .cli import decrypt, encrypt, keygen, pick
+        from .cli import decrypt, encrypt, keygen, pick, script
 
         super().options(
             opt.sub(
@@ -12,6 +12,7 @@ class Top(Base):
                     "encrypt": encrypt.Encrypt,
                     "keygen": keygen.KeyGen,
                     "pick": pick.Pick,
+                    "script": script.Script,
                 },
                 help="select sub command",
                 required=True,

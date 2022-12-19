@@ -191,4 +191,4 @@ def newkeys(nbits, accurate=True, poolsize=1):
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import *
+    from typing import Callable, Tuple
