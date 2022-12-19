@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# noqa: F821 # undefined name
 
 from binascii import hexlify
 from struct import pack
@@ -31,7 +30,6 @@ def encrypt(message, n, e):
 
 
 def encode(n):
-    # type: (int) -> Generator[int, None, None]
     while 1:
         w = n & 0x7F
         n >>= 7
@@ -43,7 +41,6 @@ def encode(n):
 
 
 def encode_stream(src, n):
-    # type: (IO, int) -> None
     src.write(bytes(encode(n)))
 
 
@@ -77,7 +74,7 @@ if __name__ == "__main__":
     r, w = stdin.buffer, stdout.buffer
     if len(argv) > 1:
         if "-b" in argv:
-            from io import RawIOBase, BufferedReader
+            from io import RawIOBase
             from base64 import b64encode
 
             class Base64Sink(RawIOBase):
@@ -110,4 +107,4 @@ if __name__ == "__main__":
             w = Base64Sink(w)
 
     with w, r:
-        vencrypt(N, X, r, w)
+        vencrypt(N, X, r, w)  # noqa: F821 # undefined name

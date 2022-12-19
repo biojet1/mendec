@@ -27,7 +27,6 @@ def decrypt(crypto, n, d):
 
 
 def decode_stream(src):
-    # type: (IO) -> int
     b = src.read(1)
     if b:
         shift = result = 0
@@ -109,12 +108,12 @@ if __name__ == "__main__":
                     return True
 
                 def readinto(self, b):
-                    l = len(b)  # We're supposed to return at most this much
+                    n = len(b)  # We're supposed to return at most this much
                     try:
                         chunk = self.leftover or next(self.iterable)
                     except StopIteration:
                         return 0  # indicate EOF
-                    output, self.leftover = chunk[:l], chunk[l:]
+                    output, self.leftover = chunk[:n], chunk[n:]
                     b[: len(output)] = output
                     return len(output)
 
@@ -125,4 +124,4 @@ if __name__ == "__main__":
             p = Popen("/bin/sh", stdin=PIPE)
             w = p.stdin
     with r, w:
-        vdecrypt(N, X, r, w) # noqa: F821 # undefined name
+        vdecrypt(N, X, r, w)  # noqa: F821 # undefined name

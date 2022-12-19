@@ -1,4 +1,3 @@
-from ast import literal_eval
 from ocli import Base
 from ocli.extra import LogOpt
 
@@ -25,7 +24,7 @@ class Script(LogOpt, Base):
 
     def start(self, *args, **kwargs):
         from os.path import join, dirname
-        from ..keyfile import find_key, parse_keyfile
+        from ..keyfile import parse_keyfile
         from .pick import as_source, as_sink
 
         desc = parse_keyfile(self.keyfile)
@@ -38,13 +37,13 @@ class Script(LogOpt, Base):
             script = join(cd, "_dec.py")
             n, x = desc["n"], desc["d"]
         with as_source(script) as r, as_sink(self.output) as w:
-            for l in r:
-                if b"__name__" in l:
+            for c in r:
+                if b"__name__" in c:
                     w.write(f"N = {n}\n".encode())
                     w.write(f"X = {x}\n".encode())
-                if l.startswith(b'#') and l.strip() == b'#':
+                if c.startswith(b'#') and c.strip() == b'#':
                     break
-                w.write(l)
+                w.write(c)
 
 
 (__name__ == "__main__") and Script().main()
