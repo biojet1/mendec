@@ -1,8 +1,6 @@
 #!/usr/bin/python
-from sys import stdin, stdout, argv
 from binascii import hexlify
 from struct import pack
-from io import RawIOBase, BufferedReader
 
 
 def bytes2int(raw_bytes):
@@ -94,30 +92,32 @@ def decode_base64_source(src, n=None):
         yield b64decode(unprocessed + b"====")
 
 
-class IterStream(RawIOBase):
-    def __init__(self, iterable):
-        self.leftover = None
-        self.iterable = iterable
-
-    def readable(self):
-        return True
-
-    def readinto(self, b):
-        l = len(b)  # We're supposed to return at most this much
-        try:
-            chunk = self.leftover or next(self.iterable)
-        except StopIteration:
-            return 0  # indicate EOF
-        output, self.leftover = chunk[:l], chunk[l:]
-        b[: len(output)] = output
-        return len(output)
-
-
 if __name__ == "__main__":
-    r = stdin.buffer
-    w = stdout.buffer
+    from sys import stdin, stdout, argv
+
+    r, w = stdin.buffer, stdout.buffer
     if len(argv) > 1:
         if "-b" in argv:
+            from io import RawIOBase, BufferedReader
+
+            class IterStream(RawIOBase):
+                def __init__(self, iterable):
+                    self.leftover = b""
+                    self.iterable = iterable
+
+                def readable(self):
+                    return True
+
+                def readinto(self, b):
+                    l = len(b)  # We're supposed to return at most this much
+                    try:
+                        chunk = self.leftover or next(self.iterable)
+                    except StopIteration:
+                        return 0  # indicate EOF
+                    output, self.leftover = chunk[:l], chunk[l:]
+                    b[: len(output)] = output
+                    return len(output)
+
             r = BufferedReader(IterStream(decode_base64_source(r)))
         if "-x" in argv:
             from subprocess import Popen, PIPE
@@ -126,11 +126,3 @@ if __name__ == "__main__":
             w = p.stdin
     with r, w:
         vdecrypt(N, X, r, w)
-#
-
-{
-    "": "70 bits, 8 bytes, 2022Dec17_073642",
-    "d": 312084042341263374101,
-    "e": 716435957194893448301,
-    "n": 744487561519699337969,
-}

@@ -1,8 +1,6 @@
 #!/usr/bin/python
-from sys import stdin, stdout, argv
 from binascii import hexlify
 from struct import pack
-from io import RawIOBase, BufferedReader
 
 
 def bytes2int(raw_bytes):
@@ -50,8 +48,6 @@ def encode_stream(src, n):
 def vencrypt(n, e, src, out):
     from random import SystemRandom
 
-    # from sys import stderr
-
     random = SystemRandom()
     bits_max = n.bit_length()
     q, r = divmod(bits_max - 1, 8)
@@ -61,10 +57,8 @@ def vencrypt(n, e, src, out):
     def mkprefix(x):
         return bytes(encode(getrandbits(random.randrange(32, 48)))) + bytes(encode(x))
 
-    # print("bytes_max", bytes_max)
     i = 0
     prefix = mkprefix(i)
-    # print("len(prefix)", len(prefix))
     block = src.read(bytes_max - len(prefix))
     while block:
         cypher = encrypt(prefix + block, n, e)
@@ -76,13 +70,42 @@ def vencrypt(n, e, src, out):
 
 
 if __name__ == "__main__":
-    r = stdin.buffer
-    with stdout.buffer as w, r:
+    from sys import stdin, stdout, argv
+
+    r, w = stdin.buffer, stdout.buffer
+    if len(argv) > 1:
+        if "-b" in argv:
+            from io import RawIOBase, BufferedReader
+            from base64 import b64encode
+
+            class Base64Sink(RawIOBase):
+                def __init__(self, sink):
+                    self.surplus = b""
+                    self.sink = sink
+
+                def close(self):
+                    sink = self.sink
+                    data = self.surplus
+                    data and sink.write(b64encode(data))
+                    sink.close()
+                    self.surplus = b""
+
+                def write(self, blob):
+                    data = self.surplus + blob
+                    safe_len = (len(data) // 3) * 3
+                    push, self.surplus = data[:safe_len], data[safe_len:]
+                    push and self.sink.write(b64encode(push))
+
+                def readable(self):
+                    return False
+
+                def writable(self):
+                    return True
+
+                def seekable(self):
+                    return False
+
+            w = Base64Sink(w)
+
+    with w, r:
         vencrypt(N, X, r, w)
-#
-{
-    "": "70 bits, 8 bytes, 2022Dec17_073642",
-    "d": 312084042341263374101,
-    "e": 716435957194893448301,
-    "n": 744487561519699337969,
-}
