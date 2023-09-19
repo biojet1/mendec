@@ -37,7 +37,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         if python3 -c 'from sys import version_info as v; assert(v[0]==3 and v[1]==10)' ; then
-          coverage run --source=./mendec -m pytest -v
+          coverage run -m pytest -v
           coveralls
         else
           python3 -m pytest -v
