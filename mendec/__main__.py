@@ -2,7 +2,7 @@ def main():
     from .parsearg import ArgumentParser
 
     cmd = ArgumentParser(prog="mendec")
-    cmd.subparsers(required=True)
+    cmd.subparsers()
     from .cli.pick import pick
     from .cli.script import script
     from .cli.keygen import keygen, x8
