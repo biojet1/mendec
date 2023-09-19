@@ -71,3 +71,15 @@ class Test(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Negative.+can.+t.+"):
             int2bytes(-1)
         self.assertEqual(int2bytes(0), b"\x00")
+
+    def test_prime(self):
+        from .prime import gcd, is_prime, are_relatively_prime
+
+        self.assertEqual(gcd(48, 180), 12)
+
+        for n in [1, 4, 6, 8, 9]:
+            self.assertEqual(is_prime(n), False, f"is_prime({n})")
+        for n in [2, 3, 5, 7]:
+            self.assertEqual(is_prime(n), True, f"is_prime({n})")
+        self.assertEqual(are_relatively_prime(7, 20), True)
+        self.assertEqual(are_relatively_prime(10, 8), False)

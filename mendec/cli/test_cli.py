@@ -57,7 +57,7 @@ class Test(unittest.TestCase):
 
         chdir(tmp)
         with open("MSG", "wb") as h:
-            h.write(b64encode(urandom(128 * 1024)))
+            h.write(b64encode(urandom(1 * 1024 * 1024)))
 
         self.shell_ok("python3 -m mendec keygen -B96 -p4 -o KEY")
         self.shell_ok("python3 -m mendec pick KEY 1 KEY1")
