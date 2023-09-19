@@ -26,7 +26,6 @@ class Test(unittest.TestCase):
         # print(usage(x))
 
     def test_enc_dec(self):
-
         from os import urandom
         from .message import encrypt, decrypt
         from .key import newkeys
@@ -61,3 +60,14 @@ class Test(unittest.TestCase):
             for accurate in (True, False):
                 for pool in (1, 2, 3):
                     try1(bits, accurate, pool)
+
+    def test_utils(self):
+        from .utils import byte_size, int2bytes
+
+        self.assertEqual(byte_size(0), 1)
+        self.assertEqual(byte_size(0xFF), 1)
+        self.assertEqual(byte_size(0xFF + 1), 2)
+
+        with self.assertRaisesRegex(ValueError, "Negative.+can.+t.+"):
+            int2bytes(-1)
+        self.assertEqual(int2bytes(0), b"\x00")
