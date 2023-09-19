@@ -1,3 +1,9 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Generator, IO
+
+
 def encode(n):
     # type: (int) -> Generator[int, None, None]
     while 1:
@@ -49,9 +55,3 @@ def decode(blob):
             i = next(it)
             shift += 7
         yield result
-
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from typing import Generator, IO

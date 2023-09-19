@@ -1,5 +1,9 @@
 from logging import debug, info, error
 from .utils import randint
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Callable, Tuple
 
 
 def extended_gcd(a, b):
@@ -92,7 +96,6 @@ def find_p_q(nbits, getprime_func, accurate=True):
     # Keep choosing other primes until they match our requirements.
     change_p = False
     while not is_acceptable(p, q):
-
         # Change p on one iteration and q on the other
         if change_p:
             debug("p and q not acceptable, finding p")
@@ -186,9 +189,3 @@ def newkeys(nbits, accurate=True, poolsize=1):
     n = p * q
 
     return n, e, d
-
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from typing import Callable, Tuple
