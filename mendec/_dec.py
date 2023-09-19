@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from binascii import hexlify
 from struct import pack
 
@@ -120,8 +120,9 @@ if __name__ == "__main__":
             r = BufferedReader(IterStream(decode_base64_source(r)))
         if "-x" in argv:
             from subprocess import Popen, PIPE
+            from os import env
 
-            p = Popen("/bin/sh", stdin=PIPE)
+            p = Popen(env["SHELL"] or "/bin/sh", stdin=PIPE)
             w = p.stdin
     with r, w:
         vdecrypt(N, X, r, w)  # noqa: F821 # undefined name

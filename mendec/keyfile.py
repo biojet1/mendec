@@ -14,6 +14,9 @@ def find_key(key):
             k = join(d, key)
             if isfile(k):
                 return k
+            k = join(d, f"{key}.key")
+            if isfile(k):
+                return k
     raise FileNotFoundError(key)
 
 

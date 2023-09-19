@@ -49,13 +49,13 @@ def vdecrypt(n, d, src, out, i=0):
     while s > 0:
         cypher = src.read(s)
         blob = decrypt(cypher, n, d)
-        # print('D', i, s, len(blob))
+        # print("D", i, s, len(blob))
         b = BytesIO(blob)
         salt = decode_stream(b)
         index = decode_stream(b)
         block = b.read()
         # print(n, index, salt, blob)
-        assert index == i
+        assert index == i, f"index:{index!r}, i:{i!r}"
         assert salt != 0
         out.write(block)
         i += 1

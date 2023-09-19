@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="mendec",
-    version="0.0.6",
+    version="0.0.7",
     author="biojet1",
     author_email="biojet1@gmail.com",
     description="Message encrytion using RSA algorithm",
@@ -10,7 +10,6 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/biojet1/mendec",
     packages=find_packages(),
-    install_requires=["ocli"],
     entry_points={
         "console_scripts": ["mendec=mendec.__main__:main"],
     },
