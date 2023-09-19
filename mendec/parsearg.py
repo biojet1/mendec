@@ -1,4 +1,27 @@
-from argparse import ArgumentParser, Namespace, BooleanOptionalAction
+from argparse import ArgumentParser, Namespace, Action
+
+try:
+    from argparse import BooleanOptionalAction
+except ImportError:
+
+    class BooleanOptionalAction(Action):
+        def __init__(self, option_strings, **kwargs):
+            _option_strings = []
+            for option_string in option_strings:
+                _option_strings.append(option_string)
+
+                if option_string.startswith("--"):
+                    option_string = "--no-" + option_string[2:]
+                    _option_strings.append(option_string)
+
+            super().__init__(option_strings=_option_strings, **kwargs)
+
+        def __call__(self, parser, namespace, values, option_string=None):
+            if option_string in self.option_strings:
+                setattr(namespace, self.dest, not option_string.startswith("--no-"))
+
+        def format_usage(self):
+            return " | ".join(self.option_strings)
 
 
 def _names(args):
