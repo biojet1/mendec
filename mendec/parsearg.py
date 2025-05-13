@@ -24,10 +24,13 @@ except ImportError:
             return " | ".join(self.option_strings)
 
 
-def _names(args):
+def _names(args, kw=None):
     for x in args:
         if not x:
             pass
+        elif " " in x or "\t" in x:
+            if kw is not None:
+                kw["help"] = x
         elif x.startswith("-"):
             yield x
         elif len(x) > 1:
@@ -38,7 +41,9 @@ def _names(args):
 
 class ArgumentParser(ArgumentParser):
     def flag(self, *args, action="store_true", **kwargs):
-        self.add_argument(*_names(args), action=action, **kwargs)
+        args2 = _names(args, kwargs)
+        # print(args2, kwargs)
+        self.add_argument(*args2, action=action, **kwargs)
         return self
 
     def off(self, *args, action="store_false", **kwargs):
@@ -82,8 +87,13 @@ class ArgumentParser(ArgumentParser):
         self.add_argument(*a, action="version", **kwargs)
         return self
 
-    def call(self, fn, **kwargs):
-        super().set_defaults(_call=fn)
+    def call(self, *args, **kwargs):
+        assert 0
+        super().set_defaults(_x_call=fn)
+        return self
+
+    def on(self, fn, **kwargs):
+        super().set_defaults(_x_call=fn)
         return self
 
     def subparsers(self, *args, **kwargs):
@@ -92,31 +102,36 @@ class ArgumentParser(ArgumentParser):
         )
         return self
 
-    def parse_sub(self, *args, **kwargs):
-        ns = self.parse_args(*args, **kwargs)
-        try:
-            fn = ns._call
-        except AttributeError:
-            pass
-        else:
-            fn(ns)
-        return ns
-
-    def sub(self, *args, **kwargs):
+    def sub(self, *args, call=None, defaults=None, **kwargs):
         try:
             sp = self._x_subparsers
         except AttributeError:
             self.subparsers()
             sp = self._x_subparsers
 
-        return sp.add_parser(*args, **kwargs)
+        p = sp.add_parser(*args, **kwargs)
+        if call is not None:
+            p.set_defaults(_x_call=call)
+        if defaults is not None:
+            p.set_defaults(**defaults)
+        return p
 
-    def __call__(self, *args, **kwargs):
-        return self.call(*args, **kwargs)
+    # def __call__(self, *args, **kwargs):
+    #     return self.call(*args, **kwargs)
 
     def ext(self, call, *args, **kwargs):
         call(self, *args, **kwargs)
         return self
+
+    def parse_args(self, args=None, namespace=None):
+        ns = super().parse_args(args, namespace)
+        try:
+            fn = ns._x_call
+        except AttributeError:
+            pass
+        else:
+            fn(ns)
+        return ns
 
 
 class Namespace(Namespace):
@@ -133,4 +148,6 @@ class Namespace(Namespace):
         else:
             return m(name)
         c = self.__class__
-        raise AttributeError(f"{c.__module__}.{c.__qualname__} has no attribute {name}")
+        raise AttributeError(
+            f"'{c.__module__}.{c.__qualname__}' has no attribute {name!r}"
+        )

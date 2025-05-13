@@ -2,7 +2,7 @@ def main():
     from .parsearg import ArgumentParser
 
     cmd = ArgumentParser(prog="mendec")
-    cmd.subparsers()
+
     from .cli.pick import pick
     from .cli.script import script
     from .cli.keygen import keygen, x8
@@ -10,7 +10,7 @@ def main():
     from .cli.decrypt import decrypt
 
     (
-        cmd.sub("pick", help="extract key")
+        cmd.sub("pick", call=pick, help="extract key")
         .arg("keyfile", help="the key file to extract key")
         .arg(
             "which",
@@ -18,10 +18,9 @@ def main():
             help="which key to output",
         )
         .arg("output", default=None, help="save key to file")
-        .call(pick)
     )
     (
-        cmd.sub("script", help="create encryptor or decryptor script")
+        cmd.sub("script", call=script, help="create encryptor or decryptor script")
         .arg("keyfile", help="the key file to extract key")
         .arg(
             "which",
@@ -29,10 +28,9 @@ def main():
             help="encryptor or decryptor",
         )
         .arg("output", default=None, help="save key to file")
-        .call(script)
     )
     (
-        cmd.sub("keygen", help="create key")
+        cmd.sub("keygen", call=keygen, help="create key")
         # --bits 256, -b 256
         .param("bits", "b", default=2048, type=int, help="How many bits")
         # --bytes 96, -B 96
@@ -51,17 +49,15 @@ def main():
             default=1,
             type=int,
             help="How many process to generate primes",
-        )
-        .param("output", "o", default=None, help="output to file")
+        ).param("output", "o", default=None, help="output to file")
         # --test, -t
         .bool("test", help="Test the generated key")
         # --near, -n
         .bool("near", dest="accurate", help="Not exact bits is ok")
-        .call(keygen)
     )
 
     (
-        cmd.sub("encrypt", help="encrypt using key")
+        cmd.sub("encrypt", call=encrypt, help="encrypt using key")
         # 1st argument
         .arg("key", help="the key file")
         # 2nd argument
@@ -69,21 +65,21 @@ def main():
         # --short, -s
         .flag("short", "s", help="short message encryption")
         # --output FILE, -o FILE
-        .param("output", "o", default=None, help="output to file").call(encrypt)
+        .param("output", "o", default=None, help="output to file")
     )
     (
-        cmd.sub("decrypt", help="decrypt using key")
+        cmd.sub("decrypt", call=decrypt, help="decrypt using key")
         # 1st argument
         .arg("key", help="the key file")
         # 2nd argument
         .arg("cypher", default="", help="the encrypted file")
         # --short, -s
-        .flag("short", "s", help="short message encryption")
+        .flag("short", "s", "short message encryption")
         # --output FILE, -o FILE
-        .param("output", "o", default=None, help="output to file").call(decrypt)
+        .param("output", "o", default=None, help="output to file")
     )
 
-    cmd.parse_sub()
+    cmd.parse_args()
 
 
 (__name__ == "__main__") and main()

@@ -1,4 +1,3 @@
-# from struct import pack
 from .utils import int2bytes, bytes2int
 
 

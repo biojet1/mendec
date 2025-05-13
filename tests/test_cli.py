@@ -80,3 +80,7 @@ class Test(unittest.TestCase):
         self.shell_ok("python3 -m mendec decrypt KEY1 ENC2 -o DEC2")
         self.same_file("MSG", "DEC2")
         self.shell_fail("python3 -m mendec decrypt KEY2 ENC2 -o DEC2")
+
+
+if __name__ == "__main__":
+    unittest.main()

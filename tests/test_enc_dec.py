@@ -3,7 +3,7 @@ import unittest
 
 class Test(unittest.TestCase):
     def test_varint(self):
-        from .varint import encode_stream, decode_stream
+        from mendec.varint import encode_stream, decode_stream
         from random import SystemRandom
         from io import BytesIO
 
@@ -27,8 +27,8 @@ class Test(unittest.TestCase):
 
     def test_enc_dec(self):
         from os import urandom
-        from .message import encrypt, decrypt
-        from .key import newkeys
+        from mendec.message import encrypt, decrypt
+        from mendec.key import newkeys
 
         def try1(bits, accurate, pool):
             n, e, d = newkeys(bits, accurate, pool)
@@ -62,7 +62,7 @@ class Test(unittest.TestCase):
                     try1(bits, accurate, pool)
 
     def test_utils(self):
-        from .utils import byte_size, int2bytes
+        from mendec.utils import byte_size, int2bytes
 
         self.assertEqual(byte_size(0), 1)
         self.assertEqual(byte_size(0xFF), 1)
@@ -73,7 +73,7 @@ class Test(unittest.TestCase):
         self.assertEqual(int2bytes(0), b"\x00")
 
     def test_prime(self):
-        from .prime import gcd, is_prime, are_relatively_prime
+        from mendec.prime import gcd, is_prime, are_relatively_prime
 
         self.assertEqual(gcd(48, 180), 12)
 
@@ -83,3 +83,7 @@ class Test(unittest.TestCase):
             self.assertEqual(is_prime(n), True, f"is_prime({n})")
         self.assertEqual(are_relatively_prime(7, 20), True)
         self.assertEqual(are_relatively_prime(10, 8), False)
+
+
+if __name__ == "__main__":
+    unittest.main()
