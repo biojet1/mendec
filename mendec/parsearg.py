@@ -87,7 +87,7 @@ class ArgumentParser(ArgumentParser):
         self.add_argument(*a, action="version", **kwargs)
         return self
 
-    def call(self, *args, **kwargs):
+    def call(self, fn, *args, **kwargs):
         assert 0
         super().set_defaults(_x_call=fn)
         return self

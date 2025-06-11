@@ -1,13 +1,17 @@
 from .utils import int2bytes, bytes2int
 
 
-def decrypt(crypto, n, d):
-    return int2bytes(pow(bytes2int(crypto), d, n))
+def decrypt(crypto: bytes, n: int, d: int):
+    assert isinstance(crypto, bytes) and n > 0 and d > 0
+    i = bytes2int(crypto)
+    assert i < n
+    return int2bytes(pow(i, d, n))
 
 
-def encrypt(message, n, e):
+def encrypt(message: bytes, n: int, e: int):
+    assert n > 0 and e > 1 and isinstance(message, bytes)
     i = bytes2int(message)
-    assert i <= n
+    assert i < n
     return int2bytes(pow(i, e, n))
 
 
