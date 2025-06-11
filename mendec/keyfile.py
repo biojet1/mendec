@@ -1,3 +1,10 @@
+from ast import literal_eval
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Dict
+
+
 def find_key(key):
     # type: (str) -> str
     from os.path import expanduser, isdir, join, isfile, exists
@@ -14,6 +21,9 @@ def find_key(key):
             k = join(d, key)
             if isfile(k):
                 return k
+            k = join(d, f"{key}.key")
+            if isfile(k):
+                return k
     raise FileNotFoundError(key)
 
 
@@ -26,10 +36,3 @@ def parse_keyfile(path):
 def parse_key(text):
     # type: (str) -> Dict[str, int]
     return literal_eval(text)
-
-
-from ast import literal_eval
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from typing import Dict

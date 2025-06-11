@@ -8,6 +8,11 @@ from multiprocessing import Process, Pipe
 from .prime import is_prime
 from .utils import read_random_odd_int
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Any
+
 
 def _find_prime(nbits, pipe):
     # type: (int, Any) -> None
@@ -45,10 +50,5 @@ def getprime(nbits, poolsize):
 
     return result
 
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from typing import Any
 
 __all__ = ["getprime"]

@@ -1,5 +1,5 @@
 # MEnDec
-![Python Logo](mendec.png)
+![MEnDec Logo](mendec.png)
 ![Python package](https://github.com/biojet1/mendec/workflows/Python%20package/badge.svg)
 ![Upload Python Package](https://github.com/biojet1/mendec/workflows/Upload%20Python%20Package/badge.svg)
 
@@ -27,23 +27,23 @@ pip install mendec
 
 ## Extract second key
 ```
-> python -m mendec pick SECRET_KEY 2 KEY2
+> python -m mendec pick SECRET_KEY 2 KEY2 
 ```
 
 ## Using the first key encrypt a message to CYPHER file
 ```
-> printf 'Attack at Noon' | python -m mendec encrypt KEY1 -o CYPHER
+> printf 'Attack at Noon'" " | python3 -m mendec encrypt -o CYPHER KEY1 -
 ```
 
 ## Using the second key decrypt the message
 ```
-> python -m mendec decrypt KEY2 < CYPHER
+> python3 -m mendec decrypt KEY2 - < CYPHER
 Attack at Noon
 ```
 
 ## Using the second key encrypt the message, then the first key to decrypt the message
 ```
-> printf Acknowledge | python -m mendec encrypt KEY2 | python -m mendec decrypt KEY1
+> printf Acknowledge | python3 -m mendec encrypt KEY2 | python3 -m mendec decrypt KEY1
 Acknowledge
 ```
 

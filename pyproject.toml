@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mendec"
+version = "0.0.7"
+authors = [
+    {name = "biojet1"},
+]
+description = "Message encryption using RSA algorithm"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {file = "LICENSE"} 
+classifiers = [
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/biojet1/mendec"
+
+[project.scripts]
+mendec = "mendec.__main__:main"
+
+[project.optional-dependencies]
+dev = [
+    "black>=23.0",
+    "flake8>=6.0",
+    "mypy>=1.0",
+    "pytest>=7.0",
+]
+test = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]

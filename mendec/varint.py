@@ -1,5 +1,14 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Generator, IO
+
+
 def encode(n):
     # type: (int) -> Generator[int, None, None]
+    """Encode an integer as a varint byte sequence."""
+    # if n < 0:
+    #     raise ValueError("Negative numbers not supported")
     while 1:
         w = n & 0x7F
         n >>= 7
@@ -11,13 +20,14 @@ def encode(n):
 
 
 def encode_stream(src, n):
-    # type: (IO, int) -> None
+    # type: (IO[bytes], int) -> None
+    """Write a varint to a binary stream."""
     src.write(bytes(encode(n)))
 
 
 def decode_stream(src):
-    # type: (IO) -> int
-    """Read a varint from `src`"""
+    # type: (IO[bytes]) -> int
+    """Read a varint from a binary stream."""
     b = src.read(1)
     if b:
         shift = result = 0
@@ -35,6 +45,7 @@ def decode_stream(src):
 
 def decode(blob):
     # type: (bytes) -> Generator[int, None, None]
+    """Decode a byte string into a sequence of varints."""
     it = iter(blob)
     while 1:
         try:
@@ -49,9 +60,3 @@ def decode(blob):
             i = next(it)
             shift += 7
         yield result
-
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from typing import Generator, IO

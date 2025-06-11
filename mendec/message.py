@@ -1,14 +1,17 @@
-# from struct import pack
 from .utils import int2bytes, bytes2int
 
 
-def decrypt(crypto, n, d):
-    return int2bytes(pow(bytes2int(crypto), d, n))
+def decrypt(crypto: bytes, n: int, d: int):
+    assert isinstance(crypto, bytes) and n > 0 and d > 0
+    i = bytes2int(crypto)
+    assert i < n
+    return int2bytes(pow(i, d, n))
 
 
-def encrypt(message, n, e):
+def encrypt(message: bytes, n: int, e: int):
+    assert n > 0 and e > 1 and isinstance(message, bytes)
     i = bytes2int(message)
-    assert i <= n
+    assert i < n
     return int2bytes(pow(i, e, n))
 
 
@@ -49,13 +52,13 @@ def vdecrypt(n, d, src, out, i=0):
     while s > 0:
         cypher = src.read(s)
         blob = decrypt(cypher, n, d)
-        # print('D', i, s, len(blob))
+        # print("D", i, s, len(blob))
         b = BytesIO(blob)
         salt = decode_stream(b)
         index = decode_stream(b)
         block = b.read()
         # print(n, index, salt, blob)
-        assert index == i
+        assert index == i, f"index:{index!r}, i:{i!r}"
         assert salt != 0
         out.write(block)
         i += 1
