@@ -2,9 +2,10 @@ from os import urandom
 from subprocess import run
 from tempfile import NamedTemporaryFile
 import unittest
+from pathlib import Path
 
-enc = "tests/k384.enc.py"
-dec = "tests/k384.dec.py"
+enc = str(Path("tests/k384.enc.py").absolute())
+dec = str(Path("tests/k384.dec.py").absolute())
 
 
 class Test(unittest.TestCase):
