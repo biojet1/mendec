@@ -31,11 +31,12 @@ class Test(unittest.TestCase):
         from mendec.key import newkeys
 
         def try1(bits, accurate, pool):
-            n, e, d = newkeys(bits, accurate, pool)
+            n, e, d, p, q = newkeys(bits, accurate, pool)
+            print([n, e, d, p, q])
 
             bits_max = n.bit_length()
-            q, r = divmod(bits_max - 1, 8)
-            bytes_max = q if q > 0 else q + 1
+            x, r = divmod(bits_max - 1, 8)
+            bytes_max = x if x > 0 else x + 1
             for s in (bytes_max, bytes_max // 4, bytes_max // 3, bytes_max // 2, 1):
                 message = urandom(s)
                 message = message.strip(b"\x00")

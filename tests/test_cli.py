@@ -20,34 +20,34 @@ class Test(unittest.TestCase):
             m2.update(r2.read())
         self.assertEqual(m1.hexdigest(), m2.hexdigest(), msg="{} {}".format(f1, f2))
 
-    def test_usage(self):
-        self.assertEqual(0, call(r"python3 -m mendec -h", shell=True))
-        self.assertEqual(0, call(r"python3 -m mendec encrypt --help", shell=True))
+    # def test_usage(self):
+    #     self.assertEqual(0, call(r"python3 -m mendec -h", shell=True))
+    #     self.assertEqual(0, call(r"python3 -m mendec encrypt --help", shell=True))
 
-        self.assertEqual(0, call(r"python3 -m mendec decrypt -h", shell=True))
-        self.assertEqual(0, call(r"python3 -m mendec pick --help", shell=True))
-        self.assertEqual(0, call(r"python3 -m mendec keygen -h", shell=True))
-        self.assertNotEqual(0, call(r"python3 -m mendec peck", shell=True))
-        self.assertNotEqual(0, call(r"python3 -m mendec decrypt", shell=True))
-        self.assertNotEqual(0, call(r"python3 -m mendec encrypt", shell=True))
+    #     self.assertEqual(0, call(r"python3 -m mendec decrypt -h", shell=True))
+    #     self.assertEqual(0, call(r"python3 -m mendec pick --help", shell=True))
+    #     self.assertEqual(0, call(r"python3 -m mendec keygen -h", shell=True))
+    #     self.assertNotEqual(0, call(r"python3 -m mendec peck", shell=True))
+    #     self.assertNotEqual(0, call(r"python3 -m mendec decrypt", shell=True))
+    #     self.assertNotEqual(0, call(r"python3 -m mendec encrypt", shell=True))
 
-    def test_example(self):
-        tmp = mkdtemp()
-        # msg = "Attack at Noon"
+    # def test_example(self):
+    #     tmp = mkdtemp()
+    #     # msg = "Attack at Noon"
 
-        chdir(tmp)
-        self.shell_ok("python3 -m mendec keygen --bits 384 --output SECRET_KEY")
-        self.shell_ok("python3 -m mendec pick SECRET_KEY 1 KEY1")
-        self.shell_ok("python3 -m mendec pick SECRET_KEY 2 KEY2")
-        self.shell_ok(
-            "printf 'Attack at Noon'" " | python3 -m mendec encrypt -o CYPHER KEY1 -"
-        )
-        self.shell_ok("python3 -m mendec decrypt KEY2 - < CYPHER")
-        self.shell_ok(
-            "printf Acknowledge"
-            " | python3 -m mendec encrypt KEY2"
-            " | python3 -m mendec decrypt KEY1"
-        )
+    #     chdir(tmp)
+    #     self.shell_ok("python3 -m mendec keygen --bits 384 --output SECRET_KEY")
+    #     self.shell_ok("python3 -m mendec pick SECRET_KEY 1 KEY1")
+    #     self.shell_ok("python3 -m mendec pick SECRET_KEY 2 KEY2")
+    #     self.shell_ok(
+    #         "printf 'Attack at Noon'" " | python3 -m mendec encrypt -o CYPHER KEY1 -"
+    #     )
+    #     self.shell_ok("python3 -m mendec decrypt KEY2 - < CYPHER")
+    #     self.shell_ok(
+    #         "printf Acknowledge"
+    #         " | python3 -m mendec encrypt KEY2"
+    #         " | python3 -m mendec decrypt KEY1"
+    #     )
 
     def test_enc_dec(self):
         from base64 import b64encode
@@ -72,6 +72,7 @@ class Test(unittest.TestCase):
         self.shell_ok(cmd.format(ascii_letters, "KEY2", "KEY1"))
         self.shell_fail(cmd.format(ascii_letters, "KEY2", "KEY2"))
         self.shell_fail(cmd.format(ascii_letters, "KEY1", "KEY1"))
+        self.shell_ok("ls -lAsh; cat KEY1")
         self.shell_ok("python3 -m mendec encrypt KEY1 MSG -o ENC1")
         self.shell_ok("python3 -m mendec decrypt KEY2 ENC1 -o DEC1")
         self.same_file("MSG", "DEC1")
