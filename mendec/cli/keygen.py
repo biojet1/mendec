@@ -8,7 +8,7 @@ def keygen(app):
     from sys import platform, set_int_max_str_digits
     from time import time
 
-    from ..key import newkeys
+    from ..keygen.key import newkeys
     from ..message import decrypt, encrypt
     from .pick import as_sink
 
@@ -27,7 +27,7 @@ def keygen(app):
     import pprint
 
     k = dict(n=n, e=e, d=d, p=p, q=q)
-    set_int_max_str_digits(10000)
+    set_int_max_str_digits(1 << 16)
     max_bits = max(v.bit_length() for n, v in k.items())
     k[""] = "{} bits, {} bytes, {}".format(
         max_bits, max_bits // 8, (datetime.utcnow()).strftime("%Y%b%d_%H%M%S")

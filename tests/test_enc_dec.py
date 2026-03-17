@@ -28,7 +28,7 @@ class Test(unittest.TestCase):
     def test_enc_dec(self):
         from os import urandom
         from mendec.message import encrypt, decrypt
-        from mendec.key import newkeys
+        from mendec.keygen.key import newkeys
 
         def try1(bits, accurate, pool):
             n, e, d, p, q = newkeys(bits, accurate, pool)
@@ -74,7 +74,7 @@ class Test(unittest.TestCase):
         self.assertEqual(int2bytes(0), b"\x00")
 
     def test_prime(self):
-        from mendec.prime import gcd, is_prime, are_relatively_prime
+        from mendec.keygen.prime import gcd, is_prime, are_relatively_prime
 
         self.assertEqual(gcd(48, 180), 12)
 
