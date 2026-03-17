@@ -44,8 +44,8 @@ def decode_stream(src):
 
 
 def decode(blob):
-    """Decode a byte string into a sequence of varints."""
     # type: (bytes) -> Generator[int, None, None]
+    """Decode a byte string into a sequence of varints."""
     it = iter(blob)
     while 1:
         try:

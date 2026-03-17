@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mendec"
-version = "0.0.7"
+version = "0.0.9"
 authors = [
     {name = "biojet1"},
 ]
 description = "Message encryption using RSA algorithm"
 readme = "README.md"
 requires-python = ">=3.8"
-license = {text = "MIT"}
+license = {file = "LICENSE"} 
 classifiers = [
     "Intended Audience :: Developers",
     "Natural Language :: English",

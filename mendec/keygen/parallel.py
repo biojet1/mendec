@@ -5,8 +5,7 @@ Copied from Python-RSA
 
 from multiprocessing import Process, Pipe
 
-from .prime import is_prime
-from .utils import read_random_odd_int
+from .prime import is_prime, read_random_odd_int
 
 from typing import TYPE_CHECKING
 

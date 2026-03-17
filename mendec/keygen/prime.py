@@ -3,7 +3,9 @@
 Copied from Python-RSA
 """
 
-from .utils import read_random_odd_int, randint
+from binascii import hexlify
+from struct import pack
+from os import urandom
 
 __all__ = ["getprime", "are_relatively_prime"]
 
@@ -171,3 +173,85 @@ def are_relatively_prime(a, b):
 
     d = gcd(a, b)
     return d == 1
+
+
+def read_random_bits(nbits):
+    # type: (int) -> bytes
+    """Reads 'nbits' random bits.
+
+    If nbits isn't a whole number of bytes, an extra byte will be appended with
+    only the lower bits set.
+    """
+
+    nbytes, rbits = divmod(nbits, 8)
+
+    # Get the random bytes
+    randomdata = urandom(nbytes)
+
+    # Add the remaining random bits
+    if rbits > 0:
+        randomvalue = ord(urandom(1))
+        randomvalue >>= 8 - rbits
+        randomdata = pack("B", randomvalue) + randomdata
+
+    return randomdata
+
+
+def read_random_int(nbits):
+    # type: (int) -> int
+    """Reads a random integer of approximately nbits bits."""
+
+    randomdata = read_random_bits(nbits)
+    value = bytes2int(randomdata)
+
+    # Ensure that the number is large enough to just fill out the required
+    # number of bits.
+    value |= 1 << (nbits - 1)
+
+    return value
+
+
+def read_random_odd_int(nbits):
+    # type: (int) -> int
+    """Reads a random odd integer of approximately nbits bits.
+
+    >>> read_random_odd_int(512) & 1
+    1
+    """
+
+    value = read_random_int(nbits)
+
+    # Make sure it's odd
+    return value | 1
+
+
+def bytes2int(raw_bytes):
+    # type: (bytes) -> int
+    return int(hexlify(raw_bytes), 16)
+
+
+def randint(maxvalue):
+    # type: (int) -> int
+    """Returns a random integer x with 1 <= x <= maxvalue
+
+    May take a very long time in specific situations. If maxvalue needs N bits
+    to store, the closer maxvalue is to (2 ** N) - 1, the faster this function
+    is.
+    """
+
+    bit_size = maxvalue.bit_length()
+
+    tries = 0
+    while True:
+        value = read_random_int(bit_size)
+        if value <= maxvalue:
+            break
+
+        if tries % 10 == 0 and tries:
+            # After a lot of tries to get the right number of bits but still
+            # smaller than maxvalue, decrease the number of bits by 1. That'll
+            # dramatically increase the chances to get a large enough number.
+            bit_size -= 1
+        tries += 1
+
+    return value

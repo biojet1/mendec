@@ -28,14 +28,15 @@ class Test(unittest.TestCase):
     def test_enc_dec(self):
         from os import urandom
         from mendec.message import encrypt, decrypt
-        from mendec.key import newkeys
+        from mendec.keygen.key import newkeys
 
         def try1(bits, accurate, pool):
-            n, e, d = newkeys(bits, accurate, pool)
+            n, e, d, p, q = newkeys(bits, accurate, pool)
+            print([n, e, d, p, q])
 
             bits_max = n.bit_length()
-            q, r = divmod(bits_max - 1, 8)
-            bytes_max = q if q > 0 else q + 1
+            x, r = divmod(bits_max - 1, 8)
+            bytes_max = x if x > 0 else x + 1
             for s in (bytes_max, bytes_max // 4, bytes_max // 3, bytes_max // 2, 1):
                 message = urandom(s)
                 message = message.strip(b"\x00")
@@ -73,7 +74,7 @@ class Test(unittest.TestCase):
         self.assertEqual(int2bytes(0), b"\x00")
 
     def test_prime(self):
-        from mendec.prime import gcd, is_prime, are_relatively_prime
+        from mendec.keygen.prime import gcd, is_prime, are_relatively_prime
 
         self.assertEqual(gcd(48, 180), 12)
 

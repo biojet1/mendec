@@ -49,11 +49,13 @@ def main():
             default=1,
             type=int,
             help="How many process to generate primes",
-        ).param("output", "o", default=None, help="output to file")
+        )
+        .param("output", "o", default=None, help="output to file")
         # --test, -t
         .bool("test", help="Test the generated key")
         # --near, -n
         .bool("near", dest="accurate", help="Not exact bits is ok")
+        .param("max-e-bits", dest="max_e_bits", help="Maximum bits of e")
     )
 
     (
