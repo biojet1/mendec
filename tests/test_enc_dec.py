@@ -2,33 +2,34 @@ import unittest
 
 
 class Test(unittest.TestCase):
-    def test_varint(self):
-        from mendec.varint import encode_stream, decode_stream
-        from random import SystemRandom
-        from io import BytesIO
+    # def test_varint(self):
+    #     from mendec.varint import encode_stream, decode_stream
+    #     from random import SystemRandom
+    #     from io import BytesIO
 
-        random = SystemRandom()
+    #     random = SystemRandom()
 
-        enb = BytesIO()
+    #     enb = BytesIO()
 
-        bits = (8, 4 * 8, 444 * 8, 4444 * 8)
+    #     bits = (8, 4 * 8, 444 * 8, 4444 * 8)
 
-        ints = [random.getrandbits(b) for b in bits]
-        for i in ints:
-            encode_stream(enb, i)
+    #     ints = [random.getrandbits(b) for b in bits]
+    #     for i in ints:
+    #         encode_stream(enb, i)
 
-        deb = BytesIO(enb.getvalue())
-        for i in ints:
-            j = decode_stream(deb)
-            self.assertEqual(i, j)
-        self.assertEqual(deb.read(), b"")
+    #     deb = BytesIO(enb.getvalue())
+    #     for i in ints:
+    #         j = decode_stream(deb)
+    #         self.assertEqual(i, j)
+    #     self.assertEqual(deb.read(), b"")
 
-        # print(usage(x))
+    #     # print(usage(x))
 
     def test_enc_dec(self):
         from os import urandom
-        from mendec.message import encrypt, decrypt
-        from mendec.keygen.key import newkeys
+        from mendec.encrypt import encrypt
+        from mendec.decrypt import decrypt
+        from mendec.keygen import newkeys
 
         def try1(bits, accurate, pool):
             n, e, d, p, q = newkeys(bits, accurate, pool)

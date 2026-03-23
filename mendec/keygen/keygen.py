@@ -2,23 +2,26 @@ def x8(v):
     return int(v) * 8
 
 
-def keygen(app):
+def keygen(
+    max_e_bits=32, bits=2048, accurate=True, pool=1, output="-", test=False, **kwargs
+):
     from datetime import datetime
     from logging import info
     from sys import platform, set_int_max_str_digits
     from time import time
 
-    from ..keygen.key import newkeys
-    from ..message import decrypt, encrypt
-    from .pick import as_sink
+    from . import newkeys
+    from ..encrypt import encrypt
+    from ..decrypt import decrypt
+    from ..utils import as_sink
 
     t = time()
-    max_e_bits = int(app.max_e_bits or 32)
+    max_e_bits = int(max_e_bits or 32)
     min_e = (2**max_e_bits - 3) if max_e_bits > 3 else 3
     n, e, d, p, q = newkeys(
-        app.bits,
-        accurate=app.accurate,
-        poolsize=app.pool,
+        bits,
+        accurate=accurate,
+        poolsize=pool,
         max_e_bits=max_e_bits,
         min_e=min_e,
     )
@@ -33,7 +36,7 @@ def keygen(app):
         max_bits, max_bits // 8, (datetime.utcnow()).strftime("%Y%b%d_%H%M%S")
     )
 
-    with as_sink(app.output, "w") as out:
+    with as_sink(output, "w") as out:
         out.write("#")
         for x, v in k.items():
             if x:
@@ -42,7 +45,7 @@ def keygen(app):
 
         pprint.pprint(k, stream=out)
 
-    if app.test is not False:
+    if test is not False:
         data = dict(message=platform.encode())
         data["encrypted"] = encrypt(data["message"], n, e)
         data["decrypted"] = decrypt(data["encrypted"], n, d)

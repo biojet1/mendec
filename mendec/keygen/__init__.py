@@ -112,40 +112,6 @@ def find_p_q(nbits, getprime_func, accurate=True):
     return max(p, q), min(p, q)
 
 
-# def calculate_keys_custom_exponent(p, q):
-#     # type: (int, int) -> Tuple[int, int]
-#     """Calculates an encryption and a decryption key given p, q and an exponent,
-#     and returns them as a tuple (e, d)
-
-#     :param p: the first large prime
-#     :param q: the second large prime
-#     :param exponent: the exponent for the key; only change this if you know
-#         what you're doing, as the exponent influences how difficult your
-#         private key can be cracked. A very common choice for e is 65537.
-#     :type exponent: int
-
-#     """
-
-#     phi_n = (p - 1) * (q - 1)
-
-#     while 1:
-#         try:
-#             exponent = randint(phi_n)
-
-#             d = inverse(exponent, phi_n)
-#             break
-#         except NotRelativePrimeError as ex:
-#             error("{!r} try again".format(ex))
-
-#     if (exponent * d) % phi_n != 1:
-#         raise ValueError(
-#             "e (%d) and d (%d) are not mult. inv. modulo "
-#             "phi_n (%d)" % (exponent, d, phi_n)
-#         )
-
-#     return exponent, d
-
-
 def calculate_keys_custom_exponent(
     p: int,
     q: int,

@@ -39,7 +39,7 @@ def _names(args, kw=None):
             yield f"-{x}"
 
 
-class ArgumentParser(ArgumentParser):
+class ArgumentParserEx(ArgumentParser):
     def flag(self, *args, action="store_true", **kwargs):
         args2 = _names(args, kwargs)
         # print(args2, kwargs)

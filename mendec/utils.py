@@ -33,4 +33,20 @@ def int2bytes(n):
     return b"".join(a)
 
 
+def as_sink(path, mode="wb"):
+    if path and path != "-":
+        return open(path, mode)
+    from sys import stdout
+
+    return stdout.buffer if "b" in mode else stdout
+
+
+def as_source(path, mode="rb"):
+    if path and path != "-":
+        return open(path, mode)
+    from sys import stdin
+
+    return stdin.buffer if "b" in mode else stdin
+
+
 #########

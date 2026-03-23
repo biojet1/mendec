@@ -1,16 +1,14 @@
 #!/usr/bin/python3
-
 from binascii import hexlify
+from io import IOBase
 from struct import pack
 
 
-def bytes2int(raw_bytes):
-    # type: (bytes) -> int
+def bytes2int(raw_bytes=b""):
     return int(hexlify(raw_bytes), 16)
 
 
-def int2bytes(n):
-    # type: (int) -> bytes
+def int2bytes(n=13):
     if n < 0:
         raise ValueError("Negative numbers cannot be used: %i" % n)
     elif n == 0:
@@ -23,49 +21,31 @@ def int2bytes(n):
     return b"".join(a)
 
 
-def encrypt(message, n, e):
+def encrypt(message=b"", n=13, e=3):
     i = bytes2int(message)
     assert i <= n
     return int2bytes(pow(i, e, n))
 
 
-def encode(n):
-    while 1:
-        w = n & 0x7F
-        n >>= 7
-        if n:
-            yield w | 0x80
-        else:
-            yield w
-            break
-
-
-def encode_stream(src, n):
-    src.write(bytes(encode(n)))
-
-
-def vencrypt(n, e, src, out):
-    from random import SystemRandom
-
-    random = SystemRandom()
-    bits_max = n.bit_length()
-    q, r = divmod(bits_max - 1, 8)
-    bytes_max = q if q > 0 else q + 1
-    getrandbits = random.getrandbits
-
-    def mkprefix(x):
-        return bytes(encode(getrandbits(random.randrange(32, 48)))) + bytes(encode(x))
-
-    i = 0
-    prefix = mkprefix(i)
-    block = src.read(bytes_max - len(prefix))
+def s_encrypt(src: IOBase, out: IOBase, n=13, e=3):
+    m = n.bit_length()
+    block_size, R = divmod(m, 8)
+    block_size += 1 if R else 0
+    bytes_max = divmod(m - 1, 8)[0]
+    block = src.read(bytes_max)
     while block:
-        cypher = encrypt(prefix + block, n, e)
-        encode_stream(out, len(cypher))
+        assert len(block) <= bytes_max
+        cur = block
+        if len(cur) < bytes_max:
+            block = b""
+        else:
+            block = src.read(bytes_max)
+        cypher = encrypt(cur, n, e)
+        c = len(cypher)
+        if block:
+            if c < block_size:
+                cypher = (b"\0" * (block_size - c)) + cypher
         out.write(cypher)
-        i += 1
-        prefix = mkprefix(i)
-        block = src.read(bytes_max - len(prefix))
 
 
 if __name__ == "__main__":
@@ -105,6 +85,5 @@ if __name__ == "__main__":
                     return False
 
             w = Base64Sink(w)
-
     with w, r:
-        vencrypt(N, X, r, w)  # noqa: F821 # undefined name
+        s_encrypt(r, w)
