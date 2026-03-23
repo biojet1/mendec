@@ -1,16 +1,15 @@
 def main():
-    from .parsearg import ArgumentParser
+    from .decrypt.__main__ import main as decrypt, supply as supply_dec
+    from .encrypt.__main__ import main as encrypt, supply as supply_enc
+    from .script.__main__ import main as script, supply as supply_script
+    from .keygen.keygen import x8, keygen
+    from .pick import pick
+    from .parsearg import ArgumentParserEx
 
-    cmd = ArgumentParser(prog="mendec")
-
-    from .cli.pick import pick
-    from .cli.script import script
-    from .cli.keygen import keygen, x8
-    from .cli.encrypt import encrypt
-    from .cli.decrypt import decrypt
+    cmd = ArgumentParserEx(prog="mendec")
 
     (
-        cmd.sub("pick", call=pick, help="extract key")
+        cmd.sub("pick", call=lambda x: pick(**x.__dict__), help="extract key")
         .arg("keyfile", help="the key file to extract key")
         .arg(
             "which",
@@ -19,18 +18,9 @@ def main():
         )
         .arg("output", default=None, help="save key to file")
     )
+
     (
-        cmd.sub("script", call=script, help="create encryptor or decryptor script")
-        .arg("keyfile", help="the key file to extract key")
-        .arg(
-            "which",
-            choices=["encryptor", "decryptor"],
-            help="encryptor or decryptor",
-        )
-        .arg("output", default=None, help="save key to file")
-    )
-    (
-        cmd.sub("keygen", call=keygen, help="create key")
+        cmd.sub("keygen", call=lambda x: keygen(**x.__dict__), help="create key")
         # --bits 256, -b 256
         .param("bits", "b", default=2048, type=int, help="How many bits")
         # --bytes 96, -B 96
@@ -57,29 +47,12 @@ def main():
         .bool("near", dest="accurate", help="Not exact bits is ok")
         .param("max-e-bits", dest="max_e_bits", help="Maximum bits of e")
     )
-
-    (
-        cmd.sub("encrypt", call=encrypt, help="encrypt using key")
-        # 1st argument
-        .arg("key", help="the key file")
-        # 2nd argument
-        .arg("message", default="", help="the message file")
-        # --short, -s
-        .flag("short", "s", help="short message encryption")
-        # --output FILE, -o FILE
-        .param("output", "o", default=None, help="output to file")
-    )
-    (
-        cmd.sub("decrypt", call=decrypt, help="decrypt using key")
-        # 1st argument
-        .arg("key", help="the key file")
-        # 2nd argument
-        .arg("cypher", default="", help="the encrypted file")
-        # --short, -s
-        .flag("short", "s", "short message encryption")
-        # --output FILE, -o FILE
-        .param("output", "o", default=None, help="output to file")
-    )
+    if x := cmd.sub("script", call=lambda x: script(**x.__dict__)):
+        supply_script(x)
+    if x := cmd.sub("encrypt", call=lambda x: encrypt(**x.__dict__)):
+        supply_enc(x)
+    if x := cmd.sub("decrypt", call=lambda x: decrypt(**x.__dict__)):
+        supply_dec(x)
 
     cmd.parse_args()
 

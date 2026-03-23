@@ -27,12 +27,6 @@ def find_key(key):
     raise FileNotFoundError(key)
 
 
-# def parse_keyfile(path):
-#     # type: (str) -> Dict[str, int]
-#     with open(path, "r") as r:
-#         return parse_key(r.read())
-
-
 def parse_keyfile(path):
     # type: (str) -> Dict[str, int]
     with open(path, "rb") as r:
@@ -41,6 +35,7 @@ def parse_keyfile(path):
             pem = 1
         elif d.startswith(b"-----BEGIN PUBL"):
             pem = 2
+
         else:
             pem = 0
         # print(h, pem)

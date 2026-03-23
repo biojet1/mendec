@@ -2,7 +2,7 @@ import unittest
 from math import gcd
 from unittest.mock import patch
 
-from mendec.keygen.key import calculate_keys_custom_exponent
+from mendec.keygen import calculate_keys_custom_exponent
 
 
 class TestCalculateKeysCustomExponent(unittest.TestCase):
