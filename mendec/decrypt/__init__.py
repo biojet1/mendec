@@ -1,6 +1,5 @@
 from binascii import hexlify
 from io import RawIOBase
-from struct import pack
 from ..utils import int2bytes
 
 

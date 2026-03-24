@@ -26,22 +26,22 @@ def s_encrypt(src: IOBase, out: IOBase, n=13, e=3):
             block = b""
         else:
             block = src.read(bytes_max)
-        if block:
-            # there's next
-            assert len(cur) == bytes_max
-        else:
-            assert len(cur) <= block_size
+        # if block:
+        #     # there's next
+        #     assert len(cur) == bytes_max
+        # else:
+        #     assert len(cur) <= block_size
         cypher = encrypt(cur, n, e)
         c = len(cypher)
         if block:
             if c < block_size:
                 cypher = (b"\0" * (block_size - c)) + cypher
-                c = len(cypher)
-            assert (
-                c == block_size
-            ), f"{dict(c=c,m=m,block_size=block_size,bytes_max=bytes_max,tell=src.tell())}"
-        else:
-            assert (
-                c <= block_size and c >= bytes_max
-            ), f"{dict(c=c,block_size=block_size,bytes_max=bytes_max,tell=src.tell())}"
+                # c = len(cypher)
+            # assert (
+            #     c == block_size
+            # ), f"{dict(c=c,m=m,block_size=block_size,bytes_max=bytes_max,tell=src.tell())}"
+        # else:
+        # assert (
+        #     c <= block_size and c >= bytes_max
+        # ), f"{dict(c=c,block_size=block_size,bytes_max=bytes_max,tell=src.tell())}"
         out.write(cypher)

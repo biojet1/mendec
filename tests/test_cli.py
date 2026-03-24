@@ -44,7 +44,7 @@ class Test(unittest.TestCase):
         # msg = "Attack at Noon"
         chdir(gettempdir())
         # chdir(tmp)
-        self.shell_ok("python -m mendec keygen --bits 384 --output SECRET_KEY")
+        self.shell_ok("python -m mendec keygen --bits 384 SECRET_KEY")
         self.shell_ok("python -m mendec pick SECRET_KEY 1 KEY1")
         self.shell_ok("python -m mendec pick SECRET_KEY 2 KEY2")
         self.shell_ok(
@@ -83,7 +83,7 @@ class Test(unittest.TestCase):
         with open("MSG", "wb") as h:
             h.write(b64encode(urandom(1 * 1024 * 1024)))
 
-        self.shell_ok("python3 -m mendec keygen -B96 -p4 -o KEY")
+        self.shell_ok("python3 -m mendec keygen -B96 -p4 KEY")
         self.shell_ok("python3 -m mendec pick KEY 1 KEY1")
         self.shell_ok("python3 -m mendec pick KEY 2 KEY2")
         self.different_file("KEY1", "KEY2")

@@ -1,13 +1,10 @@
 # MEnDec
 
 ![MEnDec Logo](mendec.png)
-![Python package](https://github.com/biojet1/mendec/workflows/Python%20package/badge.svg)
-![Upload Python Package](https://github.com/biojet1/mendec/workflows/Upload%20Python%20Package/badge.svg)
 
-[github.com/biojet1/mendec](https://github.com/biojet1/mendec)
-[pypi.org/project/mendec](https://pypi.org/project/mendec/)
+Python package for **M**essage **EN**cryption and **DE**cryption
 
-Python package for Message ENcryption and DEcryption
+[![GitHub stars](https://img.shields.io/github/stars/biojet1/mendec.svg?style=social)](https://github.com/biojet1/mendec/stargazers) [![PyPI version](https://img.shields.io/pypi/v/mendec.svg)](https://pypi.org/project/mendec/) [![Workflow Name](https://github.com/biojet1/mendec/actions/workflows/tests.yml/badge.svg)](https://github.com/biojet1/mendec/actions/workflows/tests.yml) [![Workflow Name](https://github.com/biojet1/mendec/actions/workflows/publish.yml/badge.svg)](https://github.com/biojet1/mendec/actions/workflows/publish.yml)
 
 # Install
 
@@ -20,7 +17,7 @@ pip install mendec
 ## Generate the secret key piar
 
 ```
-> python -m mendec keygen --bits 384 --output SECRET_KEY
+> python -m mendec keygen --bits 384 SECRET_KEY
 ```
 
 ## Extract first key
