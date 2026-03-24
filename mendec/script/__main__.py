@@ -30,13 +30,17 @@ def main(keyfile="", which="", output="", output2="", **kwargs):
         put(script, output, desc["n"], desc["d"])
 
 
+def supply(cli: "ArgumentParser"):
+    cli.description = "Make script encryptor/decryptor"
+    cli.add_argument("keyfile", help="the key file to extract key")
+    cli.add_argument("which", choices=["encryptor", "decryptor", "e", "d", "b"])
+    cli.add_argument("output", help="output file")
+    cli.add_argument("output2", help="second output file", nargs="?")
+
+
 if __name__ == "__main__":
     from argparse import ArgumentParser
 
-    cli = ArgumentParser(description="Make script encryptor/decryptor")
-    cli.add_argument("keyfile", help="the key file to extract key")
-    cli.add_argument("which", choices=["encryptor", "decryptor", "e", "d", "b"])
-    cli.add_argument("output", help="output file", nargs="?")
-    cli.add_argument("output2", help="second output file", nargs="?")
-
+    cli = ArgumentParser()
+    supply(cli)
     main(**cli.parse_args().__dict__)
