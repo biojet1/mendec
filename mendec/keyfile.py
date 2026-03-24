@@ -5,25 +5,35 @@ if TYPE_CHECKING:
     from typing import Dict
 
 
-def find_key(key):
-    # type: (str) -> str
-    from os.path import expanduser, isdir, join, isfile, exists
+def find_key(key="main.key"):
+    from pathlib import Path
+    from os import environ
 
-    def dirs():
-        yield "/dev/shm/.keys"
-        yield expanduser("~/.keys")
-        yield "/usr/share/.keys"
+    def places():
+        if v := environ.get("XDG_CONFIG_HOME"):
+            yield Path(v) / "mendec"
+        if v := environ.get("XDG_CONFIG_DIRS"):
+            for u in v.split(":"):
+                if u:
+                    yield Path(u) / "mendec"
+        yield Path.home() / ".config" / "mendec"
+        yield Path.home() / ".mendec"
 
-    if exists(key):
-        return key
-    for d in dirs():
-        if isdir(d):
-            k = join(d, key)
-            if isfile(k):
-                return k
-            k = join(d, f"{key}.key")
-            if isfile(k):
-                return k
+    s = Path(key)
+
+    if s.exists():
+        return s
+    elif s.is_absolute():
+        pass
+    else:
+        for d in places():
+            if d.is_dir():
+                k = d / s
+                if k.is_file():
+                    return k
+                k = d / f"{s}.key"
+                if k.is_file():
+                    return k
     raise FileNotFoundError(key)
 
 
@@ -108,52 +118,3 @@ def to_pem(nums={}, dest="private_key.pem"):
         f.write(pem)
 
     # print("PEM file created successfully.")
-
-
-# def to_pem2(nums={}, dest="private_key.pem"):
-#     from cryptography.hazmat.primitives.asymmetric import rsa
-#     from cryptography.hazmat.primitives import serialization
-
-#     # Your RSA components
-#     p = nums["p"]
-#     q = nums["q"]
-#     n = nums["n"]
-#     e = nums["e"]
-#     d = nums["d"]
-
-#     # Create private key
-#     private_key = rsa.RSAPrivateNumbers(
-#         p=p,
-#         q=q,
-#         d=d,
-#         dmp1=rsa.rsa_crt_dmp1(d, p),  # d mod (p-1)
-#         dmq1=rsa.rsa_crt_dmq1(d, q),  # d mod (q-1)
-#         iqmp=rsa.rsa_crt_iqmp(p, q),  # q^(-1) mod p
-#         public_numbers=rsa.RSAPublicNumbers(e=e, n=n),
-#     ).private_key()
-
-#     # Convert to PEM format
-#     private_pem = private_key.private_bytes(
-#         encoding=serialization.Encoding.PEM,
-#         format=serialization.PrivateFormat.PKCS8,
-#         encryption_algorithm=serialization.NoEncryption(),
-#     )
-
-#     # Save to file
-#     with open(dest, "wb") as f:
-#         f.write(private_pem)
-
-#     # # Get public key PEM
-#     # public_key = private_key.public_key()
-#     # public_pem = public_key.public_bytes(
-#     #     encoding=serialization.Encoding.PEM,
-#     #     format=serialization.PublicFormat.SubjectPublicKeyInfo,
-#     # )
-
-#     # with open("public_key.pem", "wb") as f:
-#     #     f.write(public_pem)
-
-#     # print("Private key PEM:")
-#     # print(private_pem.decode())
-#     # print("\nPublic key PEM:")
-#     # print(public_pem.decode())

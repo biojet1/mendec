@@ -2,13 +2,7 @@
 Copied from Python-RSA
 """
 
-from binascii import hexlify
 from struct import pack
-
-
-def bytes2int(raw_bytes):
-    # type: (bytes) -> int
-    return int(hexlify(raw_bytes), 16)
 
 
 def byte_size(n):

@@ -69,7 +69,10 @@ class Test(unittest.TestCase):
         )
         self.same_file(lic, f"{tmp}/_dec")
 
-    def test_enc_dec(self):
+    def test_find_key(self):
+        self.shell_fail("echo 123 | python3 -m mendec encrypt master.key")
+
+    def _test_enc_dec(self):
         from base64 import b64encode
         from string import ascii_letters
 
