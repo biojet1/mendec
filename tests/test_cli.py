@@ -44,7 +44,7 @@ class Test(unittest.TestCase):
         # msg = "Attack at Noon"
         chdir(gettempdir())
         # chdir(tmp)
-        self.shell_ok("python -m mendec keygen --bits 384 --output SECRET_KEY")
+        self.shell_ok("python -m mendec keygen --bits 384 SECRET_KEY")
         self.shell_ok("python -m mendec pick SECRET_KEY 1 KEY1")
         self.shell_ok("python -m mendec pick SECRET_KEY 2 KEY2")
         self.shell_ok(
@@ -62,9 +62,9 @@ class Test(unittest.TestCase):
         key = pwd.joinpath("tests/k384.key")
         lic = pwd.joinpath("LICENSE")
         tmp = mkdtemp()
-        self.shell_ok(f"python3 -m mendec script {key} b k384E k384D", cwd=tmp)
+        self.shell_ok(f"python3 -m mendec script {key} k384E k384D", cwd=tmp)
         self.shell_ok(
-            f"cat {lic} | python3 k384E > _enc ; cat _enc | python3 k384D > _dec ; stat {lic} _dec _enc |  grep -P 'File|Size'",
+            f"cat {lic} | python3 k384E e > _enc ; cat _enc | python3 k384D d > _dec ; stat {lic} _dec _enc |  grep -P 'File|Size'",
             cwd=tmp,
         )
         self.same_file(lic, f"{tmp}/_dec")
@@ -83,7 +83,7 @@ class Test(unittest.TestCase):
         with open("MSG", "wb") as h:
             h.write(b64encode(urandom(1 * 1024 * 1024)))
 
-        self.shell_ok("python3 -m mendec keygen -B96 -p4 -o KEY")
+        self.shell_ok("python3 -m mendec keygen -B96 -p4 KEY")
         self.shell_ok("python3 -m mendec pick KEY 1 KEY1")
         self.shell_ok("python3 -m mendec pick KEY 2 KEY2")
         self.different_file("KEY1", "KEY2")
@@ -106,6 +106,33 @@ class Test(unittest.TestCase):
         self.shell_ok("python3 -m mendec encrypt KEY2 MSG - > ENC2")
         self.shell_ok("python3 -m mendec decrypt KEY1 ENC2 DEC2")
         self.same_file("MSG", "DEC2")
+
+    def test_script_new(self):
+        from string import ascii_letters
+
+        tmp = mkdtemp()
+        self.shell_ok("python3 -m mendec keygen -B96 -p4 SECRET_KEY ; ls -lh", cwd=tmp)
+        self.shell_ok(
+            "python -m mendec script SECRET_KEY alice bob ; chmod +x alice bob",
+            cwd=tmp,
+        )
+        self.shell_ok(
+            f"echo {ascii_letters} | tee text | ./alice e | tee cypher | ./bob d | tee text2 ; md5sum text text2",
+            cwd=tmp,
+        )
+        self.shell_ok(
+            f"echo {ascii_letters} | ./bob e | ./alice d | tee text3",
+            cwd=tmp,
+        )
+        self.shell_ok("ls -lh ", cwd=tmp)
+        self.same_file(f"{tmp}/text", f"{tmp}/text2")
+        self.same_file(f"{tmp}/text", f"{tmp}/text3")
+        self.different_file(f"{tmp}/text", f"{tmp}/cypher")
+        # Readme
+        self.shell_ok("echo Where to meet | ./alice e > cypher", cwd=tmp)
+        self.shell_ok("./bob d < cypher", cwd=tmp)
+        self.shell_ok("echo El dorado | ./bob e > cypher", cwd=tmp)
+        self.shell_ok("./alice d < cypher", cwd=tmp)
 
 
 pwd = Path.cwd()

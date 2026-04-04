@@ -21,6 +21,33 @@ def int2bytes(n=13):
     return b"".join(a)
 
 
+def encrypt(message=b"", n=13, e=3):
+    i = bytes2int(message)
+    assert i <= n
+    return int2bytes(pow(i, e, n))
+
+
+def s_encrypt(src: RawIOBase, out: RawIOBase, n=13, e=3):
+    m = n.bit_length()
+    block_size, R = divmod(m, 8)
+    block_size += 1 if R else 0
+    bytes_max = divmod(m - 1, 8)[0]
+    block = src.read(bytes_max)
+    while block:
+        assert len(block) <= bytes_max
+        cur = block
+        if len(cur) < bytes_max:
+            block = b""
+        else:
+            block = src.read(bytes_max)
+        cypher = encrypt(cur, n, e)
+        c = len(cypher)
+        if block:
+            if c < block_size:
+                cypher = (b"\0" * (block_size - c)) + cypher
+        out.write(cypher)
+
+
 def decrypt(crypto=b"", n=13, d=5):
     return int2bytes(pow(bytes2int(crypto), d, n))
 
@@ -70,11 +97,20 @@ def decode_base64_source(src, n=None):
 
 
 if __name__ == "__main__":
-    from sys import stdin, stdout, argv
+    from argparse import ArgumentParser
+    from sys import stdin, stdout
 
+    a = ArgumentParser()
+    a.add_argument("-b", action="store_true", help="in/out is base64 encoded")
+    a.add_argument("what", choices=["encrypt", "decrypt", "e", "d"])
+    o = a.parse_args()
+    d = o.what.startswith("d")
+    b = o.b
+    n = 13
+    x = 7
     r, w = stdin.buffer, stdout.buffer
-    if len(argv) > 1:
-        if "-b" in argv:
+    if d:
+        if b:
             from io import RawIOBase, BufferedReader
 
             class IterStream(RawIOBase):
@@ -96,11 +132,40 @@ if __name__ == "__main__":
                     return len(output)
 
             r = BufferedReader(IterStream(decode_base64_source(r)))
-        if "-x" in argv:
-            from subprocess import Popen, PIPE
-            from os import env
+        with r, w:
+            s_decrypt(r, w, n, x)
+    else:
+        if b:
+            from io import RawIOBase
+            from base64 import b64encode
 
-            p = Popen(env["SHELL"] or "/bin/sh", stdin=PIPE)
-            w = p.stdin
-    with r, w:
-        s_decrypt(r, w)
+            class Base64Sink(RawIOBase):
+                def __init__(self, sink):
+                    self.surplus = b""
+                    self.sink = sink
+
+                def close(self):
+                    sink = self.sink
+                    data = self.surplus
+                    data and sink.write(b64encode(data))
+                    sink.close()
+                    self.surplus = b""
+
+                def write(self, blob):
+                    data = self.surplus + blob
+                    safe_len = (len(data) // 3) * 3
+                    push, self.surplus = data[:safe_len], data[safe_len:]
+                    push and self.sink.write(b64encode(push))
+
+                def readable(self):
+                    return False
+
+                def writable(self):
+                    return True
+
+                def seekable(self):
+                    return False
+
+            w = Base64Sink(w)
+        with w, r:
+            s_encrypt(r, w, n, x)
